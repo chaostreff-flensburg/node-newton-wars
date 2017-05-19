@@ -55,11 +55,11 @@ let compiler = webpack(config);
 winston.info('Running initial build ...')
 
 let instance = new Server(compiler, {
-  contentBase: env.STATIC_PATH,
   historyApiFallback: true,
   inline: true,
   hot: true,
-  quiet: true
+  quiet: true,
+  publicPath: '/'
 })
 
 compiler.watch({
