@@ -1,0 +1,10 @@
+html {
+  font-family: 'Arial', sans-serif;
+  margin: 0px;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+#app {
+  min-height: 100vh;
+}
