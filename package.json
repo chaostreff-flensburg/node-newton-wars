@@ -1,6 +1,6 @@
 {
   "name": "react-sandbox-boilerplate",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A highly customizable react boilerplate using webpack's node API.",
   "author": "electron-byte",
   "repository": {
