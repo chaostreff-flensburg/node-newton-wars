@@ -12,7 +12,8 @@ const config = {
   entry: env.ENTRYPOINT,
   output: {
     path: env.BUILD_PATH,
-    filename: 'app.js'
+    filename: 'app.js',
+    publicPath: '/'
   },
   plugins: [
     new webpack.DefinePlugin({
