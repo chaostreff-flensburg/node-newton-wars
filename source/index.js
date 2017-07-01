@@ -1,21 +1,24 @@
 import injectTapEventPlugin from 'react-tap-event-plugin'
 import ReactDOM from 'react-dom'
 import React from 'react'
+import { Provider } from 'react-redux'
 import 'typeface-roboto'
 
 injectTapEventPlugin()
 
+import socket from './socket'
+
+import { Main } from './components'
+import store from './store'
+
+window.reset = () => {
+  socket.connect()
+  socket.reloadUniverse(store.dispatch)
+}
+
 ReactDOM.render(
-  <div>
-    <h1>react-sandbox-boilerplate</h1>
-    <p>
-      Much visible code. Such no reading docs. Wow.
-      <br/>
-      <b>- Doge, 2017</b>
-    </p>
-    <p>
-      A highly customizable react boilerplate using webpack's node API.
-    </p>
-  </div>,
+  <Provider store={store}>
+    <Main/>
+  </Provider>,
   document.getElementById('app')
 )

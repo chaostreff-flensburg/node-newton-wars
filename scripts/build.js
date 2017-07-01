@@ -37,7 +37,7 @@ const config = {
   module: {
     loaders: [
       {
-        test: /\.js$|\.jsx/,
+        test: /\.js$|\.jsx$/,
         loaders: ['babel-loader'],
         exclude: [env.NODE_MODULES_PATH]
       },
@@ -48,6 +48,10 @@ const config = {
       {
         test: /\.(eot|woff|woff2|svg|ttf)([\?]?.*)$/,
         loader: 'file?name=fonts/[hash].[ext]'
+      },
+      {
+        test: /\.(png|jpeg|jpg)([\?]?.*)$/,
+        loader: 'file?name=static/[name].[ext]'
       }
     ]
   }
