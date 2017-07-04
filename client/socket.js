@@ -1,6 +1,6 @@
 import io from 'socket.io-client'
 
-import { connectSocket, disconnectSocket, loadUniverse } from './actions'
+import { connectSocket, disconnectSocket, loadUniverse, loginUser } from './actions'
 
 class Socket {
   constructor () {
@@ -21,9 +21,15 @@ class Socket {
     this.connection.on('send-universe', (data) => {
       this.dispatch(loadUniverse(data))
     })
+    this.connection.on('authorized', (data) => {
+      this.dispatch(loginUser(data))
+    })
   }
   loadUniverse () {
     this.connection.emit('request-universe')
+  }
+  login (username) {
+    this.connection.emit('login', { username })
   }
 }
 

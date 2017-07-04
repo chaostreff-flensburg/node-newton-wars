@@ -6,8 +6,7 @@ export const REFRESH_GAME = 'REFRESH_GAME'
 
 // auth
 export const SET_USERNAME = 'SET_USERNAME'
-export const CONNECT_USER = 'CONNECT_USER'
-export const DISCONNECT_USER = 'DISCONNECT_USER'
+export const LOGIN_USER = 'CONNECT_USER'
 
 // universe
 export const LOAD_UNIVERSE = 'LOAD_UNIVERSE'

@@ -6,14 +6,21 @@ import reducers from './reducers'
 
 
 const initialState = {
-  game:  {
+  auth: {
+    username: '',
+    token: null,
+    kills: 0,
+    deaths: 0,
     energy: 20,
     velocity: 10,
-    angle: 0
-  },
-  auth: cookie.load('auth') || {
-    token: null,
-    username: null
+    angle: 0,
+    entitity: {
+      pos: {
+        x: 0,
+        y: 0
+      },
+      r: 0
+    }
   },
   universe: {
     planets: [],
