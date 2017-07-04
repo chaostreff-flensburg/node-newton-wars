@@ -1,7 +1,5 @@
-import { CONNECT_ENDPOINT, DISCONNECT_ENDPOINT } from '../endpoints'
 import { CONNECT_USER, DISCONNECT_USER, SET_USERNAME } from '../constants'
 import cookie from 'react-cookies'
-import client from '../axios'
 
 export function connect (token) {
   return {
@@ -27,6 +25,7 @@ export function connectUser () {
   return (dispatch, getState) => {
     const state = getState()
     const { username } = state.auth
+    /*
     client.post(CONNECT_ENDPOINT, {
       username
     }).then((response) => {
@@ -36,6 +35,7 @@ export function connectUser () {
     }).catch((error) => {
       console.log(error) // improve error handling
     })
+    */
   }
 }
 
@@ -43,6 +43,7 @@ export function disconnectUser () {
   return (dispatch, getState) => {
     const state = getState()
     const { token } = state.auth
+    /*
     client.post(DISCONNECT_ENDPOINT, {
       token
     }).then((response) => {
@@ -51,5 +52,6 @@ export function disconnectUser () {
     }).catch((error) => {
       console.log(error) // improve error handling
     })
+    */
   }
 }

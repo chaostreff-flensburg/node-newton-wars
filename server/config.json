@@ -1,0 +1,17 @@
+{
+  "port": 9000,
+  "host": "127.0.0.1",
+  "planets": {
+    "amount": 20,
+    "minimalSize": 100,
+    "maximalSize": 300
+  },
+  "xResolution": 7680,
+  "yResolution": 4320,
+  "clearance": {
+    "planets": 50,
+    "users": 100,
+    "common": 50
+  },
+  "userSize": 2
+}

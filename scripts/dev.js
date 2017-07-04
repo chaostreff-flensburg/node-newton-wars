@@ -17,8 +17,8 @@ const config = {
   ],
   output: {
     path: env.BUILD_PATH,
-    publicPath: '/',
-    filename: 'app.js'
+    filename: 'app.js',
+    publicPath: '/'
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
@@ -43,10 +43,6 @@ const config = {
       {
         test: /\.(eot|woff|woff2|svg|ttf)([\?]?.*)$/,
         loader: 'file?name=fonts/[hash].[ext]'
-      },
-      {
-        test: /\.(png|jpeg|jpg)([\?]?.*)$/,
-        loader: 'file?name=static/[name].[ext]'
       }
     ]
   }
@@ -56,7 +52,7 @@ let ready = false
 let faulty = false
 let compiler = webpack(config);
 
-winston.info('Running initial build ...')
+winston.info('[Client] Running initial development build ...')
 
 let instance = new Server(compiler, {
   historyApiFallback: true,
@@ -86,14 +82,14 @@ compiler.watch({
     faulty = info.errors.length > 0 || info.warnings.length
     if (!ready && !faulty) {
       ready = true
-      winston.info(`Starting development server: http://${env.DEV_HOST}:${env.DEV_PORT}`)
+      winston.info(`[Client] Server online: http://${env.DEV_HOST}:${env.DEV_PORT}`)
       instance.listen(env.DEV_PORT, env.DEV_HOST, () => {
         open(`http://${env.DEV_HOST}:${env.DEV_PORT}`)
       })
     }
-    winston.info(`Build finished [${info.hash}] [${info.time}ms] [${utils.round(human.number, 2)}${human.unit}]`)
+    winston.info(`[Client] Build finished [${info.hash}] [${info.time}ms] [${utils.round(human.number, 2)}${human.unit}]`)
     if (faulty) {
-      winston.warn('Faulty build: Listing errors and warnings ...')
+      winston.warn('[Client] Faulty build: Listing errors and warnings ...')
       info.errors.forEach((error) => {
         winston.error(error)
       })

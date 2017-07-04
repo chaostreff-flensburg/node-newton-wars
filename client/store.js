@@ -21,6 +21,10 @@ const initialState = {
       x: 0,
       y: 0
     }
+  },
+  socket: {
+    connected: false,
+    notification: false
   }
 }
 

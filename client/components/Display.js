@@ -6,7 +6,7 @@ import socket from '../socket'
 class Display extends Component {
   constructor(props) {
     super(props)
-    this.ratios = {
+    this.scales = {
       x: 0,
       y: 0,
       s: 0
@@ -15,51 +15,63 @@ class Display extends Component {
       /* Allows CSS to determine size of canvas */
       this.canvas.width = this.canvas.clientWidth
       this.canvas.height = this.canvas.clientHeight
-      this.clearAndDraw()
+      this.renderCanvas()
     }
+    this.render = this.render.bind(this)
     this.drawPlanets = this.drawPlanets.bind(this)
   }
   componentWillMount () {
-    socket.connect()
-    socket.loadUniverse(this.props.dispatch)
+    const { dispatch } = this.props
+    socket.connect(dispatch)
+    socket.loadUniverse()
   }
   componentDidMount() {
     window.addEventListener('resize', this._resizeHandler)
     /* Allows CSS to determine size of canvas */
     this.canvas.width = this.canvas.clientWidth
     this.canvas.height = this.canvas.clientHeight
-    this.clearAndDraw()
+    this.renderCanvas()
   }
   componentWillUnmount() {
     window.removeEventListener('resize', this._resizeHandler);
   }
   componentDidUpdate() {
-    this.clearAndDraw()
+    this.renderCanvas()
   }
-  clearAndDraw () {
-    this.ratios.x = Math.ceil(this.props.universe.dimensions.x / this.canvas.width)
-    this.ratios.y = Math.ceil(this.props.universe.dimensions.y / this.canvas.height)
-    this.ratios.s = Math.ceil((this.ratios.x + this.ratios.y))
+  renderCanvas () {
+    this.scales.x = Math.ceil(this.props.universe.dimensions.x / this.canvas.width)
+    this.scales.y = Math.ceil(this.props.universe.dimensions.y / this.canvas.height)
+    this.scales.r = Math.ceil((this.scales.x + this.scales.y))
     const ctx = this.canvas.getContext('2d')
     if (ctx) {
       ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+      this.drawGravity(ctx)
       this.drawPlanets(ctx)
-      // this.drawUsers(ctx)
     }
   }
   drawPlanets (ctx) {
     this.props.universe.planets.forEach((planet) => {
-      const { x, y, s } = planet
+      const { x, y, } = planet.pos
+      const r = planet.entitity
       ctx.beginPath()
-      ctx.arc(Math.ceil(x / this.ratios.x), Math.ceil(y / this.ratios.y), Math.ceil(s / this.ratios.s), 0, 2 * Math.PI)
-      ctx.fillStyle = '#2196f3'
+      ctx.arc(Math.ceil(x / this.scales.x), Math.ceil(y / this.scales.y), Math.ceil(r / this.scales.r), 0, 2 * Math.PI)
+      ctx.fillStyle = 'rgba(33, 150, 243, 1.00)'
+      ctx.fill()
+    })
+  }
+  drawGravity (ctx) {
+    this.props.universe.planets.forEach((planet) => {
+      const { x, y, } = planet.pos
+      const r = planet.entitity
+      ctx.beginPath()
+      ctx.arc(Math.ceil(x / this.scales.x), Math.ceil(y / this.scales.y), Math.ceil(r / this.scales.r * 10), 0, 2 * Math.PI)
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'
       ctx.fill()
     })
   }
   render () {
-    const { absolute } = this.props
     return (
-      <canvas ref={canvas => this.canvas = canvas} style={{ width: '100%', height: '100%', position: absolute ? 'absolute' : 'relative', zIndex: 0 }}/>
+      <canvas ref={canvas => this.canvas = canvas} style={{ width: '100%', height: '100%', position: 'absolute', zIndex: 0 }}/>
     )
   }
 }

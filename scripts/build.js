@@ -48,20 +48,16 @@ const config = {
       {
         test: /\.(eot|woff|woff2|svg|ttf)([\?]?.*)$/,
         loader: 'file?name=fonts/[hash].[ext]'
-      },
-      {
-        test: /\.(png|jpeg|jpg)([\?]?.*)$/,
-        loader: 'file?name=static/[name].[ext]'
       }
     ]
   }
 }
 
-winston.info('Running production build...')
+winston.info('[Client] Running production build...')
 
 const compiler = webpack(config);
 
-winston.info(`Purging build folder: ${path.relative(env.CONTEXT_PATH, env.BUILD_PATH)}`)
+winston.info(`[Client] Purging build folder: ${path.relative(env.CONTEXT_PATH, env.BUILD_PATH)}`)
 
 fs.emptyDir(env.BUILD_PATH, (err) => {
   if (err) winston.error(err)
@@ -75,7 +71,7 @@ fs.emptyDir(env.BUILD_PATH, (err) => {
         size += chunk.size
       })
       let human = utils.getHumanFilesize(size)
-      winston.info(`Build finished [${info.hash}] [${info.time}ms] [${utils.round(human.number, 2)}${human.unit}]`)
+      winston.info(`[Client] Build finished [${info.hash}] [${info.time}ms] [${utils.round(human.number, 2)}${human.unit}]`)
     }
   })
 })

@@ -8,13 +8,8 @@ injectTapEventPlugin()
 
 import socket from './socket'
 
-import { Main } from './components'
+import Main from './components/Main'
 import store from './store'
-
-window.reset = () => {
-  socket.connect()
-  socket.reloadUniverse(store.dispatch)
-}
 
 ReactDOM.render(
   <Provider store={store}>

@@ -27,8 +27,8 @@ class Login extends Component {
     return (
       <Card>
         <CardContent>
-          <Typography type='headline'>Get schwifty!</Typography>
-          <Typography type='subheading' gutterBottom>Choose a username and join the game</Typography>
+          <Typography type='headline'>Newton wars</Typography>
+          <Typography type='subheading' gutterBottom>Choose a username and join the game!</Typography>
           <TextField type='text' label='Username' placeholder='Username' onChange={applyUsername} autoCorrect='off' autoCapitalize='off' spellCheck='false' style={{ width: '100%' }}/>
         </CardContent>
         <CardActions>

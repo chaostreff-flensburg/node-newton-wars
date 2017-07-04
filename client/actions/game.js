@@ -1,6 +1,3 @@
-import client from '../axios'
-
-import { SHOOT_ENDPOINT } from '../endpoints'
 import { REFRESH_GAME, SET_ENERGY, SET_VELOCITY, SET_ANGLE } from '../constants'
 
 export function refreshGame (energy, velocity, angle) {
@@ -10,6 +7,7 @@ export function refreshGame (energy, velocity, angle) {
     velocity,
     angle
   }
+  console.log('test')
 }
 
 export function setEnergy (energy) {
@@ -38,6 +36,7 @@ export function shoot () {
     const state = getState()
     const { token } = state.auth
     const { velocity, angle } = state.game
+    /*
     client.post(SHOOT_ENDPOINT, {
       token,
       velocity,
@@ -48,5 +47,6 @@ export function shoot () {
     }).catch((error) => {
       console.log(error) // improve error handling
     })
+    */
   }
 }
