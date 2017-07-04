@@ -1,4 +1,4 @@
-import { SET_USERNAME, CONNECT_USER, DISCONNECT_USER } from '../constants'
+import { SET_USERNAME, LOGIN_USER } from '../constants'
 
 const auth = (state = {}, action = {}) => {
   switch (action.type) {
@@ -6,13 +6,16 @@ const auth = (state = {}, action = {}) => {
       return Object.assign({}, state, {
         username: action.username
       })
-    case CONNECT_USER:
+    case LOGIN_USER:
       return Object.assign({}, state, {
-        token: action.token
-      })
-    case DISCONNECT_USER:
-      return Object.assign({}, state, {
-        token: null
+        username: action.username,
+        token: action.token,
+        kills: action.kills,
+        deaths: action.deaths,
+        energy: action.energy,
+        velocity: action.velocity,
+        angle: action.angle,
+        entitity: action.entitity
       })
     default:
       return state

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { TextField, Button, Card, CardContent, CardActions, Typography } from 'material-ui'
 
-import { connectUser, setUsername } from '../actions'
+import { setUsername } from '../actions'
 
 class Login extends Component {
   constructor (props) {
@@ -23,16 +23,16 @@ class Login extends Component {
     document.body.removeEventListener('keydown', this.keyboardControl)
   }
   render () {
-    const { auth, openConnection, applyUsername } = this.props
+    const { auth, changeUsername } = this.props
     return (
       <Card>
         <CardContent>
           <Typography type='headline'>Newton wars</Typography>
           <Typography type='subheading' gutterBottom>Choose a username and join the game!</Typography>
-          <TextField type='text' label='Username' placeholder='Username' onChange={applyUsername} autoCorrect='off' autoCapitalize='off' spellCheck='false' style={{ width: '100%' }}/>
+          <TextField type='text' label='Username' placeholder='Username' onChange={changeUsername} autoCorrect='off' autoCapitalize='off' spellCheck='false' style={{ width: '100%' }}/>
         </CardContent>
         <CardActions>
-          <Button raised color='primary' onClick={openConnection}>Connect</Button>
+          <Button raised color='primary'>Connect</Button>
         </CardActions>
       </Card>
     )
@@ -47,8 +47,7 @@ const injectState = ({ auth }) => {
 
 const injectDispatch = (dispatch) => {
   return {
-    openConnection: () => dispatch(connectUser()),
-    applyUsername: (event) => dispatch(setUsername(event.target.value))
+    changeUsername: (event) => dispatch(setUsername(event.target.value))
   }
 }
 
