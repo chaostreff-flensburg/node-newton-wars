@@ -4,10 +4,10 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import 'typeface-roboto'
 
-injectTapEventPlugin()
-
 import { Main } from './components'
 import store from './store'
+
+injectTapEventPlugin()
 
 ReactDOM.render(
   <Provider store={store}>
