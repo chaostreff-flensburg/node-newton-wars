@@ -2,25 +2,29 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { TextField, Button, Card, CardContent, CardActions, Typography } from 'material-ui'
 
-import { setUsername } from '../actions'
+import { setUsername, login } from '../actions'
 
 class Login extends Component {
   constructor (props) {
     super()
-    this.keyboardControl = this.keyboardControl.bind(this)
+    this.checkLogin = this.checkLogin.bind(this)
   }
-  keyboardControl (event) {
+  startGame () {
+
+  }
+  checkLogin (event) {
+    const { user, joinGame } = this.props
     const key = event.keyCode || event.charCode || 0
     const { openConnection } = this.props
-    if (key === 13) {
-      openConnection()
+    if (key === 13 || event.target.id === 'login') {
+      joinGame(user.username)
     }
   }
   componentWillMount () {
-    document.body.addEventListener('keydown', this.keyboardControl)
+    document.body.addEventListener('keydown', this.checkLogin)
   }
   componentWillUnmount () {
-    document.body.removeEventListener('keydown', this.keyboardControl)
+    document.body.removeEventListener('keydown', this.checkLogin)
   }
   render () {
     const { auth, changeUsername } = this.props
@@ -32,22 +36,23 @@ class Login extends Component {
           <TextField type='text' label='Username' placeholder='Username' onChange={changeUsername} autoCorrect='off' autoCapitalize='off' spellCheck='false' style={{ width: '100%' }}/>
         </CardContent>
         <CardActions>
-          <Button raised color='primary'>Connect</Button>
+          <Button id='login' raised color='primary' onClick={this.checkLogin}>Connect</Button>
         </CardActions>
       </Card>
     )
   }
 }
 
-const injectState = ({ auth }) => {
+const injectState = ({ user }) => {
   return {
-    auth
+    user
   }
 }
 
 const injectDispatch = (dispatch) => {
   return {
-    changeUsername: (event) => dispatch(setUsername(event.target.value))
+    changeUsername: (event) => dispatch(setUsername(event.target.value)),
+    joinGame: (username) => dispatch(login(username))
   }
 }
 

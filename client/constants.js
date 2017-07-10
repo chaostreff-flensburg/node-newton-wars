@@ -1,17 +1,18 @@
-// game
-export const SET_VELOCITY = 'SET_VELOCITY'
-export const SET_ENERGY = 'SET_ENERGY'
-export const SET_ANGLE = 'SET_ANGLE'
-export const REFRESH_GAME = 'REFRESH_GAME'
-
 // auth
 export const SET_USERNAME = 'SET_USERNAME'
-export const LOGIN_USER = 'CONNECT_USER'
+export const LOGIN = 'LOGIN'
+export const INVALIDATE_LOGIN = 'INVALIDATE_LOGIN'
+export const LOGOUT = 'LOGOUT'
+export const NOTIFY_LOGOUT = 'NOTIFY_LOGOUT'
+export const LOAD_USER = 'LOAD_USER'
 
 // universe
+export const REQUEST_UNIVERSE = 'REQUEST_UNIVERSE'
 export const LOAD_UNIVERSE = 'LOAD_UNIVERSE'
 
-// socket
+// socketio
 export const CONNECT_SOCKET = 'CONNECT_SOCKET'
 export const DISCONNECT_SOCKET = 'DISCONNECT_SOCKET'
+export const AVAILABLE_SOCKET = 'AVAILABLE_SOCKET'
+export const UNAVAILABLE_SOCKET = 'UNAVAILABLE_SOCKET'
 export const HIDE_SOCKET_NOTIFICATION = 'HIDE_SOCKET_NOTIFICATION'

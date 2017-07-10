@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import socket from '../socket'
+import { requestUniverse } from '../actions'
 
 class Display extends Component {
   constructor(props) {
-    super(props)
+    super()
     this.scales = {
       x: 0,
       y: 0,
@@ -21,9 +21,7 @@ class Display extends Component {
     this.drawPlanets = this.drawPlanets.bind(this)
   }
   componentWillMount () {
-    const { dispatch } = this.props
-    socket.connect(dispatch)
-    socket.loadUniverse()
+    this.props.queryUniverse()
   }
   componentDidMount() {
     window.addEventListener('resize', this._resizeHandler)
@@ -51,8 +49,8 @@ class Display extends Component {
   }
   drawPlanets (ctx) {
     this.props.universe.planets.forEach((planet) => {
-      const { x, y, } = planet.pos
-      const r = planet.entitity
+      const { x, y } = planet.pos
+      const r = planet.r
       ctx.beginPath()
       ctx.arc(Math.ceil(x / this.scales.x), Math.ceil(y / this.scales.y), Math.ceil(r / this.scales.r), 0, 2 * Math.PI)
       ctx.fillStyle = 'rgba(33, 150, 243, 1.00)'
@@ -61,8 +59,8 @@ class Display extends Component {
   }
   drawGravity (ctx) {
     this.props.universe.planets.forEach((planet) => {
-      const { x, y, } = planet.pos
-      const r = planet.entitity
+      const { x, y } = planet.pos
+      const r = planet.r
       ctx.beginPath()
       ctx.arc(Math.ceil(x / this.scales.x), Math.ceil(y / this.scales.y), Math.ceil(r / this.scales.r * 10), 0, 2 * Math.PI)
       ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'
@@ -82,6 +80,10 @@ const injectState = ({ universe }) => {
   }
 }
 
-const injectDispatch = (dispatch) => ({ dispatch })
+const injectDispatch = (dispatch) => {
+  return {
+    queryUniverse: () => dispatch(requestUniverse())
+  }
+}
 
 export default connect(injectState, injectDispatch)(Display)

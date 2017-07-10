@@ -1,13 +1,13 @@
 import { combineReducers } from 'redux'
 
-import auth from './auth'
+import user from './user'
 import universe from './universe'
-import socket from './socket'
+import socketio from './socketio'
 
 const reducers = combineReducers({
-  auth,
+  user,
   universe,
-  socket
+  socketio
 })
 
 export default reducers

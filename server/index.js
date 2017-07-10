@@ -5,6 +5,7 @@ const crypto = require('crypto')
 const winston = require('winston')
 
 const config = require('./config')
+const util = require('./util')
 
 const app = express()
 const server = http.Server(app)
@@ -19,39 +20,9 @@ server.listen(config.port, config.host, () => {
 const planets = []
 const users = []
 const shots = []
-const gravity = 9.81
 
-const V = function (x, y) {
-  this.x = x
-  this.y = y
-}
-
-function getUser (token) {
-  return users.filter((user) => user.token === token)[0] || null
-}
-
-function randomInt (min, max) {
-  return Math.ceil(Math.random() * (max - min) + min)
-}
-
-function Planet () {
-  const x = randomInt(config.planets.maximalSize, config.xResolution - config.planets.maximalSize)
-  const y = randomInt(config.planets.maximalSize, config.yResolution - config.planets.maximalSize)
-  const r = randomInt(config.planets.minimalSize, config.planets.maximalSize)
-  this.pos = new V(x, y)
-  this.entitity = r
-  this.gravity = r * gravity
-}
-
-function User (username, token, socketId) {
-  const x = randomInt(config.planets.maximalSize, config.xResolution - config.planets.maximalSize)
-  const y = randomInt(config.planets.maximalSize, config.yResolution - config.planets.maximalSize)
-  this.username = username
-  this.token = token
-  this.socketId = socketId
-  this.pos = new V(x, y)
-  this.entitity = config.userSize
-}
+const Planet = util.Planet
+const User = util.User
 
 function collide (a, b) {
   let clearance = 0
@@ -64,23 +35,58 @@ function collide (a, b) {
   }
   const x = a.pos.x - b.pos.x
   const y = a.pos.y - b.pos.y
-  return (Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) < (a.entitity + b.entitity + clearance))
+  return (Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) < (a.r + b.r + clearance))
 }
 
-function spawnPlanets () {
-  planets[0] = new Planet()
-  let planet = null
-  for (let i = 0; i < config.planets.amount; ++i) {
-    planet = new Planet()
-    for (let j = 0; j < i; ++j) {
-      if (i !== j && collide(planets[j], planet)) {
-        j = 0
+function spawnPlanet () {
+  let planet = new Planet()
+  for (let i = 0; i < users.length + planets.length; ++i) {
+    if (i < users.length) {
+      if (users.length - 1 !== i && collide(users[i], planet)) {
+        i = 0
         planet = new Planet()
       }
+    } else {
+      if (planets.length - 1 !== i - users.length && collide(planets[i - users.length], planet)) {
+        i = 0
+        planet = new Planet()
+      }
+      if (i === users.length + planets.length - 1) {
+        return planet
+      }
     }
-    if (i < config.planets.amount - 1) {
-      planets[i + 1] = planet
+  }
+  if (!planets.length && !users.length) {
+    return planet
+  }
+}
+
+function spawnUser (username, token, socket) {
+  let user = new User(username, token, socket)
+  for (let i = 0; i < users.length + planets.length; ++i) {
+    if (i < users.length) {
+      if (users.length - 1 !== i && collide(users[i], user)) {
+        i = 0
+        user = new User(username, token, socket)
+      }
+    } else {
+      if (planets.length - 1 !== i - users.length && collide(planets[i - users.length], user)) {
+        i = 0
+        user = new User(username, token, socket)
+      }
+      if (i === users.length + planets.length - 1) {
+        return user
+      }
     }
+  }
+  if (!planets.length && !users.length) {
+    return user
+  }
+}
+
+function spawnUniverse () {
+  for (let i = 0; i < config.planets.amount; ++i) {
+    planets.push(spawnPlanet())
   }
   return {
     planets,
@@ -91,7 +97,7 @@ function spawnPlanets () {
   }
 }
 
-const universe = spawnPlanets()
+const universe = spawnUniverse ()
 
 /*
 function check_against_planets(spot)
@@ -191,45 +197,39 @@ function stepper()
 }
 */
 
-io.on('connection', function (connection) {
-
+io.on('connection', (connection) => {
+  // make connection available in callbacks
 	const socket = connection
 
 	socket.emit('send-universe', universe)
 
   // user logs in
-  socket.on('login', function (data) {
-    if (users.filter((user) => user.username === data.username).length) {
-      socket.emit('unauthorized', { error: `User already exists: ${data.username}` })
-      winston.error(`[Server] User already exists: ${data.username}`)
+  socket.on('login', (data) => {
+    const username = data.username
+    if (users.filter((user) => user.username === username).length) {
+      socket.emit('unauthorized', { error: `User already exists: ${username}` })
+      winston.error(`[Server] User already exists: ${username}`)
     } else {
       crypto.randomBytes(512, (err, buffer) => {
         if (err) {
           socket.emit('unauthorized', { error: 'Generating token failed!' })
           winston.error('[Server] Generating token failed!')
         }
-        const user = {
-          token: buffer.toString('base64'),
-          socket: socket.socketId,
-          username: data.username,
-          entitity: spawn(),
-          deaths: 0,
-          kills: 0,
-          energy: 20,
-          velocity: 10
-        }
-        console.log(socket.socketId)
-        socket.emit('authorized', user)
+        const token = buffer.toString('base64')
+        const user = spawnUser(username, token, socket.id)
         users.push(user)
-        winston.info(`User joined: ${user.username}`)
+        socket.emit('authorized', user)
+        winston.info(`[Server] User joined: ${username}`)
       })
     }
 	})
 
   // user logs out
-  socket.on('logout', function (data) {
-    const user = getUser(data.token)
-    if (user) {
+  socket.on('logout', (data) => {
+    const index = users.findIndex((user) => user.auth.socket === socket.id)
+    if (~index) {
+      const user = users[index]
+      users.splice(index, 1)
       socket.emit('unauthorized', { message: 'User successfully closed connection!' })
       winston.info(`[Server] User left: ${user.username}`)
     } else {
@@ -238,8 +238,18 @@ io.on('connection', function (connection) {
     }
   })
 
-  // user requests map
-	socket.on('request-universe', function (data) {
+  socket.on('disconnect', () => {
+    const index = users.findIndex((user) => user.auth.socket === socket.id)
+    if (~index) {
+      const user = users[index]
+      users.splice(index, 1)
+      socket.emit('unauthorized', { message: 'User successfully closed connection!' })
+      winston.info(`[Server] User left: ${user.username}`)
+    }
+  })
+
+  // user requests universe
+	socket.on('request-universe', (data) => {
 		socket.emit('send-universe', universe)
   })
 

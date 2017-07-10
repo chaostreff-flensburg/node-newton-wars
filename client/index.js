@@ -6,9 +6,7 @@ import 'typeface-roboto'
 
 injectTapEventPlugin()
 
-import socket from './socket'
-
-import Main from './components/Main'
+import { Main } from './components'
 import store from './store'
 
 ReactDOM.render(

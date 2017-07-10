@@ -1,14 +1,14 @@
-import { CONNECT_SOCKET, DISCONNECT_SOCKET, HIDE_SOCKET_NOTIFICATION } from '../constants'
+import { AVAILABLE_SOCKET, UNAVAILABLE_SOCKET, HIDE_SOCKET_NOTIFICATION } from '../constants'
 
-const socket = (state = {}, action = {}) => {
+const socketio = (state = {}, action = {}) => {
   switch (action.type) {
-    case CONNECT_SOCKET:
+    case AVAILABLE_SOCKET:
       return Object.assign({}, state, {
         connected: true,
         notification: true
       })
       break
-    case DISCONNECT_SOCKET:
+    case UNAVAILABLE_SOCKET:
       return Object.assign({}, state, {
         connected: false,
         notification: true
@@ -24,4 +24,4 @@ const socket = (state = {}, action = {}) => {
   }
 }
 
-export default socket
+export default socketio

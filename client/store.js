@@ -2,25 +2,33 @@ import { createStore, applyMiddleware } from 'redux'
 import thunkMiddleware from 'redux-thunk'
 import cookie from 'react-cookies'
 
+import socketioMiddleware from './socketioMiddleware'
 import reducers from './reducers'
 
 
 const initialState = {
-  auth: {
+  user: {
     username: '',
-    token: null,
-    kills: 0,
-    deaths: 0,
-    energy: 20,
-    velocity: 10,
-    angle: 0,
-    entitity: {
-      pos: {
-        x: 0,
-        y: 0
-      },
-      r: 0
-    }
+    auth: {
+      token: '',
+      socket: ''
+    },
+    score: {
+      kills: 0,
+      deaths: 0
+    },
+    game: {
+      energy: 20,
+      velocity: 10,
+      angle: 0
+    },
+    pos: {
+      x: 0,
+      y: 0
+    },
+    r: 0,
+    error: null,
+    message: null
   },
   universe: {
     planets: [],
@@ -29,7 +37,7 @@ const initialState = {
       y: 0
     }
   },
-  socket: {
+  socketio: {
     connected: false,
     notification: false
   }
@@ -38,7 +46,7 @@ const initialState = {
 const store = createStore(
   reducers,
   initialState,
-  applyMiddleware(thunkMiddleware)
+  applyMiddleware(thunkMiddleware, socketioMiddleware)
 )
 
 export default store
