@@ -1,4 +1,4 @@
-import { SET_USERNAME, LOAD_USER, INVALIDATE_LOGIN, NOTIFY_LOGOUT } from '../constants'
+import { SET_USERNAME, LOAD_USER, INVALIDATE_LOGIN, NOTIFY_LOGOUT, LOGIN, LOGOUT } from '../constants'
 
 const auth = (state = {}, action = {}) => {
   switch (action.type) {
@@ -86,6 +86,7 @@ const user = (state = {}, action = {}) => {
         error: null,
         message: null
       })
+      break
     case LOAD_USER:
       return Object.assign({}, state, {
         username: action.username,
@@ -95,13 +96,17 @@ const user = (state = {}, action = {}) => {
         pos: pos(state.pos, action),
         r: action.r,
         error: null,
-        message: null
+        message: null,
+        loading: false
       })
+      break
     case INVALIDATE_LOGIN:
       return Object.assign({}, state, {
         error: action.error,
-        message: null
+        message: null,
+        loading: false
       })
+      break
     case NOTIFY_LOGOUT:
       return Object.assign({}, state, {
         username: action.username,
@@ -111,8 +116,16 @@ const user = (state = {}, action = {}) => {
         pos: pos(state.pos, action),
         r: 0,
         message: action.message,
-        error: null
+        error: null,
+        loading: false
       })
+      break
+    case LOGIN:
+    case LOGOUT:
+      return Object.assign({}, state, {
+        loading: true
+      })
+      break
     default:
       return state
   }

@@ -13,6 +13,6 @@
     "users": 100,
     "common": 50
   },
-  "userSize": 2,
+  "userSize": 30,
   "gravity": 9.81
 }

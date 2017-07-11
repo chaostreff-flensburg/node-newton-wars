@@ -7,36 +7,38 @@ import { setUsername, login } from '../actions'
 class Login extends Component {
   constructor (props) {
     super()
-    this.checkLogin = this.checkLogin.bind(this)
+    this.handleKeypress = this.handleKeypress.bind(this)
+    this.handleClick = this.handleClick.bind(this)
+    this.startGame = this.startGame.bind(this)
   }
   startGame () {
-
-  }
-  checkLogin (event) {
     const { user, joinGame } = this.props
+    joinGame(user.username)
+  }
+  handleKeypress (event) {
     const key = event.keyCode || event.charCode || 0
-    const { openConnection } = this.props
-    if (key === 13 || event.target.id === 'login') {
-      joinGame(user.username)
-    }
+    if (key === 13) this.startGame()
+  }
+  handleClick () {
+    this.startGame()
   }
   componentWillMount () {
-    document.body.addEventListener('keydown', this.checkLogin)
+    document.body.addEventListener('keydown', this.handleKeypress)
   }
   componentWillUnmount () {
-    document.body.removeEventListener('keydown', this.checkLogin)
+    document.body.removeEventListener('keydown', this.handleKeypress)
   }
   render () {
-    const { auth, changeUsername } = this.props
+    const { user, changeUsername } = this.props
     return (
       <Card>
         <CardContent>
           <Typography type='headline'>Newton wars</Typography>
           <Typography type='subheading' gutterBottom>Choose a username and join the game!</Typography>
-          <TextField type='text' label='Username' placeholder='Username' onChange={changeUsername} autoCorrect='off' autoCapitalize='off' spellCheck='false' style={{ width: '100%' }}/>
+          <TextField type='text' label='Username' placeholder='Username' onChange={changeUsername} value={user.username} autoCorrect='off' autoCapitalize='off' spellCheck='false' style={{ width: '100%' }}/>
         </CardContent>
         <CardActions>
-          <Button id='login' raised color='primary' onClick={this.checkLogin}>Connect</Button>
+          <Button id='login' raised color='primary' onClick={this.handleClick} disabled={user.loading}>Connect</Button>
         </CardActions>
       </Card>
     )

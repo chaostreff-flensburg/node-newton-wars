@@ -206,7 +206,10 @@ io.on('connection', (connection) => {
   // user logs in
   socket.on('login', (data) => {
     const username = data.username
-    if (users.filter((user) => user.username === username).length) {
+    if (username.length < 2) {
+      socket.emit('unauthorized', { error: `Username must be at least two characters long: ${username}` })
+      winston.error(`[Server] Username is to short: ${username}`)
+    } else if (users.filter((user) => user.username === username).length) {
       socket.emit('unauthorized', { error: `User already exists: ${username}` })
       winston.error(`[Server] User already exists: ${username}`)
     } else {
@@ -238,6 +241,7 @@ io.on('connection', (connection) => {
     }
   })
 
+  // user or viewer disconnects
   socket.on('disconnect', () => {
     const index = users.findIndex((user) => user.auth.socket === socket.id)
     if (~index) {

@@ -18,7 +18,11 @@ class Display extends Component {
       this.renderCanvas()
     }
     this.render = this.render.bind(this)
+    this.drawCircle = this.drawCircle.bind(this)
+    this.drawText = this.drawText.bind(this)
+    this.drawGravity = this.drawGravity.bind(this)
     this.drawPlanets = this.drawPlanets.bind(this)
+    this.drawUser = this.drawUser.bind(this)
   }
   componentWillMount () {
     this.props.queryUniverse()
@@ -45,27 +49,34 @@ class Display extends Component {
       ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
       this.drawGravity(ctx)
       this.drawPlanets(ctx)
+      if (this.props.user.auth.token) this.drawUser(ctx)
     }
   }
-  drawPlanets (ctx) {
-    this.props.universe.planets.forEach((planet) => {
-      const { x, y } = planet.pos
-      const r = planet.r
-      ctx.beginPath()
-      ctx.arc(Math.ceil(x / this.scales.x), Math.ceil(y / this.scales.y), Math.ceil(r / this.scales.r), 0, 2 * Math.PI)
-      ctx.fillStyle = 'rgba(33, 150, 243, 1.00)'
-      ctx.fill()
-    })
+  drawText (ctx, x, y, text, color) {
+    ctx.font = '20px Arial'
+    ctx.fillStyle = color
+    ctx.fillText(text, x / this.scales.x + 10, y / this.scales.y + 20)
+  }
+  drawCircle (ctx, x, y, r, color) {
+    ctx.beginPath()
+    ctx.arc(Math.ceil(x / this.scales.x), Math.ceil(y / this.scales.y), Math.ceil(r / this.scales.r), 0, 2 * Math.PI)
+    ctx.fillStyle = color
+    ctx.fill()
   }
   drawGravity (ctx) {
     this.props.universe.planets.forEach((planet) => {
-      const { x, y } = planet.pos
-      const r = planet.r
-      ctx.beginPath()
-      ctx.arc(Math.ceil(x / this.scales.x), Math.ceil(y / this.scales.y), Math.ceil(r / this.scales.r * 10), 0, 2 * Math.PI)
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'
-      ctx.fill()
+      this.drawCircle(ctx, planet.pos.x, planet.pos.y, planet.r * 10, 'rgba(0, 0, 0, 0.05)')
     })
+  }
+  drawPlanets (ctx) {
+    this.props.universe.planets.forEach((planet) => {
+      this.drawCircle(ctx, planet.pos.x, planet.pos.y, planet.r, 'rgba(33, 150, 243, 1.00)')
+    })
+  }
+  drawUser (ctx) {
+    const { user } = this.props
+    this.drawCircle(ctx, user.pos.x, user.pos.y, user.r, 'rgba(255, 171, 64, 1.00)')
+    this.drawText(ctx, user.pos.x, user.pos.y, `[${user.score.kills}:${user.score.deaths}] ${user.username}`, 'rgba(0, 0, 0, 1.00)')
   }
   render () {
     return (
@@ -74,9 +85,10 @@ class Display extends Component {
   }
 }
 
-const injectState = ({ universe }) => {
+const injectState = ({ universe, user }) => {
   return {
-    universe
+    universe,
+    user
   }
 }
 

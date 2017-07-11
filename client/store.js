@@ -28,7 +28,8 @@ const initialState = {
     },
     r: 0,
     error: null,
-    message: null
+    message: null,
+    loading: false
   },
   universe: {
     planets: [],

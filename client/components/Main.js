@@ -34,7 +34,9 @@ class Main extends Component {
           <Display/>
           <Grid container direction='row' align='center' justify='center' gutter={0} style={{ width: '100%', height: '100vh' }}>
             <Grid item xs={8} md={8} md={6} lg={5} xl={3} style={{ zIndex: 1 }}>
-              {user.auth.token ? <p>GAME</p> : <Login/>}
+              {user.auth.token ? <h1>
+                {null}
+              </h1> : <Login/>}
             </Grid>
           </Grid>
           <Snackbar onRequestClose={closeNotification} anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} open={socketio.notification} autoHideDuration={5000} message={`${socketio.connected ? 'Connected to' : 'Disconnected from'} server`}/>
