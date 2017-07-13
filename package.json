@@ -5,7 +5,7 @@
   "author": "chaostreff-flensburg",
   "repository": {
     "type": "git",
-    "url": "https://github.com/electron-byte/react-sandbox-boilerplate.git"
+    "url": "https://github.com/chaostreff-flensburg/node-newton-wars"
   },
   "scripts": {
     "start": "run-p dev:client dev:server",
