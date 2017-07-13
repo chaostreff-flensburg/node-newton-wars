@@ -58,7 +58,10 @@ let instance = new Server(compiler, {
   historyApiFallback: true,
   inline: true,
   hot: true,
-  quiet: true
+  quiet: true,
+  path: env.STATIC_PATH,
+  filename: 'app.js',
+  publicPath: '/'
 })
 
 compiler.watch({

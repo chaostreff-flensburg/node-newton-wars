@@ -23,6 +23,7 @@ class Display extends Component {
     this.drawGravity = this.drawGravity.bind(this)
     this.drawPlanets = this.drawPlanets.bind(this)
     this.drawUser = this.drawUser.bind(this)
+    this.drawCurve = this.drawCurve.bind(this)
   }
   componentWillMount () {
     this.props.queryUniverse()
@@ -50,7 +51,29 @@ class Display extends Component {
       this.drawGravity(ctx)
       this.drawPlanets(ctx)
       if (this.props.user.auth.token) this.drawUser(ctx)
+      const randomInt = (min, max) => {
+        return Math.floor(Math.random() * (max - min) + min)
+      }
+      const points = []
+      if (this.props.user.auth.token) points.push(this.props.user.pos)
+      for (let i = 0; i < 40; ++i) {
+        points.push({ x: randomInt(0, this.canvas.width), y: randomInt(0, this.canvas.height) })
+      }
+      this.drawCurve(ctx, points)
     }
+  }
+  drawCurve (ctx, points) {
+    ctx.beginPath()
+    ctx.moveTo(points[0].x, points[0].y)
+    for (let i = 1; i < points.length - 2; ++i) {
+      const xc = (points[i].x + points[i + 1].x) / 2
+      const yc = (points[i].y + points[i + 1].y) / 2
+      ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc)
+    }
+    ctx.quadraticCurveTo(points[points.length - 2].x, points[points.length - 2].y, points[points.length - 1].x, points[points.length - 1].y)
+    ctx.lineWidth = 2
+    ctx.strokeStyle = 'rgba(255, 171, 64, 1.00)'
+    ctx.stroke()
   }
   drawText (ctx, x, y, text, color) {
     ctx.font = '20px Arial'
