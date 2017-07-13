@@ -22,6 +22,7 @@ const initialState = {
       velocity: 10,
       angle: 0
     },
+    shots: [],
     pos: {
       x: 0,
       y: 0

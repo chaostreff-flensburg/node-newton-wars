@@ -13,6 +13,7 @@
     "users": 100,
     "common": 50
   },
+  "tokenSize": 4096,
   "userSize": 30,
   "gravity": 9.81
 }

@@ -25,8 +25,33 @@ exports.User = function (username, token, socket) {
   this.auth = { token, socket }
   this.score = { kills: 0, deaths: 0 }
   this.game = { energy: 20, velocity: 10, angle: 0 }
+  this.shots = []
   this.pos = new exports.Vector(x, y)
   this.r = config.userSize
+}
+
+exports.Projectile = function () {
+  this.points = []
+  this.collided = false
+  this.move = function (planets) {
+    // move projectile depending on gravity
+  }
+}
+
+exports.collide = function (a, b) {
+  let clearance = 0
+  if (a instanceof exports.User && b instanceof exports.User) {
+    clearance += config.clearance.users
+  } else if (a instanceof exports.Planet && b instanceof exports.Planet) {
+    clearance += config.clearance.planets
+  } else if (a instanceof exports.Projectile || b instanceof exports.Projectile) {
+    clearance = 0
+  } else {
+    clearance += config.clearance.common
+  }
+  const x = a.pos.x - b.pos.x
+  const y = a.pos.y - b.pos.y
+  return (Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) < (a.r + b.r + clearance))
 }
 
 exports.getUser = (users, token) => {

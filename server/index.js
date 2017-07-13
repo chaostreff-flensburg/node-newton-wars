@@ -19,35 +19,22 @@ server.listen(config.port, config.host, () => {
 
 const planets = []
 const users = []
-const shots = []
 
 const Planet = util.Planet
 const User = util.User
-
-function collide (a, b) {
-  let clearance = 0
-  if (a instanceof User && b instanceof User) {
-    clearance += config.clearance.users
-  } else if (a instanceof Planet && b instanceof Planet) {
-    clearance += config.clearance.planets
-  } else {
-    clearance += config.clearance.common
-  }
-  const x = a.pos.x - b.pos.x
-  const y = a.pos.y - b.pos.y
-  return (Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) < (a.r + b.r + clearance))
-}
+const Vector = util.Vector
+const Projectile = util.Projectile
 
 function spawnPlanet () {
   let planet = new Planet()
   for (let i = 0; i < users.length + planets.length; ++i) {
     if (i < users.length) {
-      if (users.length - 1 !== i && collide(users[i], planet)) {
+      if (users.length - 1 !== i && util.collide(users[i], planet)) {
         i = 0
         planet = new Planet()
       }
     } else {
-      if (planets.length - 1 !== i - users.length && collide(planets[i - users.length], planet)) {
+      if (planets.length - 1 !== i - users.length && util.collide(planets[i - users.length], planet)) {
         i = 0
         planet = new Planet()
       }
@@ -65,12 +52,12 @@ function spawnUser (username, token, socket) {
   let user = new User(username, token, socket)
   for (let i = 0; i < users.length + planets.length; ++i) {
     if (i < users.length) {
-      if (users.length - 1 !== i && collide(users[i], user)) {
+      if (users.length - 1 !== i && util.collide(users[i], user)) {
         i = 0
         user = new User(username, token, socket)
       }
     } else {
-      if (planets.length - 1 !== i - users.length && collide(planets[i - users.length], user)) {
+      if (planets.length - 1 !== i - users.length && util.collide(planets[i - users.length], user)) {
         i = 0
         user = new User(username, token, socket)
       }
@@ -104,22 +91,22 @@ function check_against_planets(spot)
 {
 	var response = new SAT.Response();
 	planets.forEach(function(ptt) {
-		var collided = SAT.testCircleCircle(spot, ptt.c, response);
-		if(collided == true)
-			return collided;
+		var util.collided = SAT.testCircleCircle(spot, ptt.c, response);
+		if(util.collided == true)
+			return util.collided;
 	})
-	return (collided) ? true :false;
+	return (util.collided) ? true :false;
 }
 
 function check_against_players(spot)
 {
 	var response = new SAT.Response();
 	players.forEach(function(ptt) {
-		var collided = SAT.testCircleCircle(spot, ptt.c, response);
-		if(collided == true)
-			return collided;
+		var util.collided = SAT.testCircleCircle(spot, ptt.c, response);
+		if(util.collided == true)
+			return util.collided;
 	})
-	return (collided) ? true : false;
+	return (util.collided) ? true : false;
 }
 
 //7680x4320 // such solution // much pixel // wow planets
@@ -130,9 +117,9 @@ for(let i = 0; i < config.planetAmount; i++)
 	var y = random_int(config.maximalSize,config.ySize-config.maximalSize);
 	var s = random_int(config.minimalSize,config.maximalSize)
 	var ptt = new C(new V(x,y), s + config.playersafespace);
-	var collided = check_against_planets(ptt);
-	console.log(collided);
-	if(!collided)
+	var util.collided = check_against_planets(ptt);
+	console.log(util.collided);
+	if(!util.collided)
 		planets.push({ x: x, y: y, s: s, c: new C(new V(x,y), s)});
 	else
 		i--;
@@ -144,11 +131,11 @@ function find_new_spot()
 	{
 			var test = {x: random_int(0,config.xSize), y: random_int(0,config.ySize), s: config.playersize};
 			var ptt = new C(new V(test.x,test.y), test.s + config.playersafespace);
-			var collided = check_against_planets(ptt);
-			if(!collided)
+			var util.collided = check_against_planets(ptt);
+			if(!util.collided)
 			{
-				var collided = check_against_players(ptt);
-				if(!collided)
+				var util.collided = check_against_players(ptt);
+				if(!util.collided)
 				{
 					return test;
 				}
@@ -164,10 +151,10 @@ function create_shot(player, pind, velocity, angle)
 
 function testCircleCollision(a, b) {
   var response = new SAT.Response();
-  var collided = SAT.testCircleCircle(a.c, b.c, response);
+  var util.collided = SAT.testCircleCircle(a.c, b.c, response);
 
   return {
-    collided: collided,
+    util.collided: util.collided,
     response: response
   };
 };
@@ -178,7 +165,7 @@ function stepper()
 		shot.c.pos = shot.c.pos.add(shot.v)
 		players.forEach(function(ptt,pind,parr) {
 			var response = SAT.testCircleCollision(shot, ptt);
-			if(response.collided == true)
+			if(response.util.collided == true)
 			{
 				players[pind].c = find_new_spot(); // Shot trifft auf Player = Player tot
 				players[pind].deads++; // Shot trifft auf Player = Player tot
@@ -190,7 +177,7 @@ function stepper()
 		});
 		planets.forEach(function(ptt,pind,parr) {
 			var response = SAT.testCircleCollision(shot, ptt);
-			if(response.collided == true)
+			if(response.util.collided == true)
 				shots.indexOf(sind); // Shot trifft auf Planet = Shot geht garnicht mehr
 		});
 	});
@@ -213,7 +200,7 @@ io.on('connection', (connection) => {
       socket.emit('unauthorized', { error: `User already exists: ${username}` })
       winston.error(`[Server] User already exists: ${username}`)
     } else {
-      crypto.randomBytes(512, (err, buffer) => {
+      crypto.randomBytes(config.tokenSize, (err, buffer) => {
         if (err) {
           socket.emit('unauthorized', { error: 'Generating token failed!' })
           winston.error('[Server] Generating token failed!')
@@ -273,8 +260,8 @@ io.on('connection', (connection) => {
 			var y = random_int(config.maximalSize,config.ySize-config.maximalSize);
 			var s = random_int(config.minimalSize,config.maximalSize)
 			var ptt = new C(new V(x,y), s);
-			var collided = check_against_planets(ptt);
-			if(!collided)
+			var util.collided = check_against_planets(ptt);
+			if(!util.collided)
 				planets.push({ x: x, y: y, s: s, c: new C(new V(x,y), s)});
 			else
 				i--;
