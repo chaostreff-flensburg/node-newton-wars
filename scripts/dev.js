@@ -60,7 +60,6 @@ let instance = new Server(compiler, {
   hot: true,
   quiet: true,
   path: env.STATIC_PATH,
-  filename: 'app.js',
   publicPath: '/'
 })
 
