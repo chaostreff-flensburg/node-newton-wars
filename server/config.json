@@ -15,5 +15,6 @@
   },
   "tokenSize": 4096,
   "userSize": 30,
-  "gravity": 9.81
+  "gravity": 9.81,
+  "updateFrequency": 200
 }

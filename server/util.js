@@ -1,5 +1,11 @@
 const config = require('./config')
 
+if (config.updateFrequency < 20 || config.updateFrequency > 200) {
+  throw new Error('Update frequency must be between 20Hz and 200Hz.')
+}
+
+const delta = 1000 / config.updateFrequency
+
 exports.randomInt = (min, max) => {
   return Math.ceil(Math.random() * (max - min) + min)
 }
@@ -30,22 +36,21 @@ exports.User = function (username, token, socket) {
   this.r = config.userSize
 }
 
-exports.Projectile = function () {
+exports.Shot = function () {
   this.points = []
   this.collided = false
+  this.velocity =
   this.move = function (planets) {
     // move projectile depending on gravity
   }
 }
 
-exports.collide = function (a, b) {
+exports.collide = (a, b) => {
   let clearance = 0
   if (a instanceof exports.User && b instanceof exports.User) {
     clearance += config.clearance.users
   } else if (a instanceof exports.Planet && b instanceof exports.Planet) {
     clearance += config.clearance.planets
-  } else if (a instanceof exports.Projectile || b instanceof exports.Projectile) {
-    clearance = 0
   } else {
     clearance += config.clearance.common
   }

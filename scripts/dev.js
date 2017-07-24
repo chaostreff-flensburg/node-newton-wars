@@ -56,10 +56,10 @@ winston.info('[Client] Running initial development build ...')
 
 let instance = new Server(compiler, {
   historyApiFallback: true,
+  contentBase: env.STATIC_PATH,
   inline: true,
   hot: true,
   quiet: true,
-  path: env.STATIC_PATH,
   publicPath: '/'
 })
 
