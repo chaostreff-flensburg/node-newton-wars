@@ -39,10 +39,8 @@ exports.User = function (username, token, socket) {
 exports.Shot = function () {
   this.points = []
   this.collided = false
-  this.velocity =
-  this.move = function (planets) {
-    // move projectile depending on gravity
-  }
+  this.velocity = null
+  this.acceleration = null
 }
 
 exports.collide = (a, b) => {
@@ -60,7 +58,7 @@ exports.collide = (a, b) => {
 }
 
 exports.getPublicUser = (user) => {
-  let publicUser = Object.assign({}, user)
+  const publicUser = Object.assign({}, user)
   delete publicUser.game
   delete publicUser.auth.token
   return publicUser

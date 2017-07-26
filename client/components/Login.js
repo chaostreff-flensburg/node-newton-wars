@@ -35,6 +35,8 @@ class Login extends Component {
         <CardContent>
           <Typography type='headline'>Newton wars</Typography>
           <Typography type='subheading' gutterBottom>Choose a username and join the game!</Typography>
+          {user.error && <Typography style={{ color: '#ff1744' }} gutterBottom><b>{user.error}</b></Typography>}
+          {user.message && <Typography style={{ color: '#2196f3' }} gutterBottom><b>{user.message}</b></Typography>}
           <TextField type='text' label='Username' placeholder='Username' onChange={changeUsername} value={user.username} autoCorrect='off' autoCapitalize='off' spellCheck='false' style={{ width: '100%' }}/>
         </CardContent>
         <CardActions>

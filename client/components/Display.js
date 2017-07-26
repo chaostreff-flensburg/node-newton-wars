@@ -45,20 +45,8 @@ class Display extends Component {
     const context = this.canvas.getContext('2d')
     applyScales(dimensions, { x: this.canvas.width, y: this.canvas.height })
     applyContext(context)
-    this.scales.x = dimensions.x / this.canvas.width
-    this.scales.y = dimensions.y / this.canvas.height
-    this.scales.r = (this.scales.x + this.scales.y) / 2
     if (context) {
       clearCanvas()
-      planets.forEach((planet) => {
-        this.drawPlanet(planet)
-      })
-      if (user.auth.token) this.drawPlayer(this.props.user)
-      if (players.length) {
-        players.forEach((player) => {
-          this.drawPlayer(player)
-        })
-      }
       const randomInt = (min, max) => {
         return Math.ceil(Math.random() * (max - min) + min)
       }
@@ -68,6 +56,15 @@ class Display extends Component {
         points.push({ x: randomInt(0, this.canvas.width), y: randomInt(0, this.canvas.height) })
       }
       drawCurve(points, 'rgba(255, 171, 64, 1.00)', 2)
+      planets.forEach((planet) => {
+        this.drawPlanet(planet)
+      })
+      if (user.auth.token) this.drawPlayer(this.props.user)
+      if (players.length) {
+        players.forEach((player) => {
+          this.drawPlayer(player)
+        })
+      }
     }
   }
   drawPlanet (planet) {

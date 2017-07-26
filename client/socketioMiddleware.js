@@ -14,6 +14,7 @@ import {
   loadUniverse,
   loadUser,
   invalidateLogin,
+  notifyLogout,
   addPlayer,
   removePlayer,
   loadPlayers
@@ -22,6 +23,7 @@ import {
 let socket = null
 
 const socketioMiddleware = store => next => action => {
+  const state = store.getState()
   switch (action.type) {
     case CONNECT_SOCKET:
       socket = io.connect('http://127.0.0.1:9000')
@@ -52,9 +54,9 @@ const socketioMiddleware = store => next => action => {
         store.dispatch(loadUser(username, auth, score, game, pos, r))
       })
       socket.on('unauthorized', (data) => {
-        const { error, message } = data
+        const { error, message, sync } = data
         if (error) store.dispatch(invalidateLogin(error))
-        if (message) store.dispatch(notifyLogout(message))
+        if (message || sync) store.dispatch(notifyLogout(message))
       })
       break
     case DISCONNECT_SOCKET:

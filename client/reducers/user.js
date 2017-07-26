@@ -109,7 +109,6 @@ const user = (state = {}, action = {}) => {
       break
     case NOTIFY_LOGOUT:
       return Object.assign({}, state, {
-        username: action.username,
         auth: auth(state.auth, action),
         score: score(state.score, action),
         game: game(state.game, action),

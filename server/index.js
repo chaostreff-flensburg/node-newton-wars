@@ -17,6 +17,7 @@ server.listen(config.port, config.host, () => {
   winston.info(`[Server] Server online: http://${config.host}:${config.port}`)
 })
 
+const timestamp = Date.now()
 const planets = []
 const users = []
 const collisions = {
@@ -68,7 +69,10 @@ function spawnUniverse () {
   for (let i = 0; i < config.planets.amount; ++i) {
     planets.push(spawnPlanet())
   }
-  winston.info(`[Server] Created ${planets.length} planets after ${collisions.planets} collisions.`)
+  winston.info(`[Server] Created ${planets.length} planets.`)
+  if (collisions.planets) {
+    winston.info(`[Server] ${collisions.planets} ${collisions.planets > 1 ? 'planets' : 'planet'} had to be respawned.`)
+  }
   return {
     planets,
     dimensions: {
@@ -84,17 +88,19 @@ io.on('connection', (connection) => {
   // make connection available in callbacks
 	const socket = connection
 
+  // force synchronisation
 	socket.emit('send-universe', universe)
   socket.emit('send-players', { players: users.map((user) => util.getPublicUser(user)) })
+  socket.emit('unauthorized', { sync: true })
 
   // user logs in
   socket.on('login', (data) => {
     const username = data.username
     if (username.length < 2) {
-      socket.emit('unauthorized', { error: `Username must be at least two characters long: ${username}` })
+      socket.emit('unauthorized', { error: `The username must be at least two characters long: ${username}` })
       winston.error(`[Server] Username is to short: ${username}`)
     } else if (users.filter((user) => user.username === username).length) {
-      socket.emit('unauthorized', { error: `User already exists: ${username}` })
+      socket.emit('unauthorized', { error: `This user already exists: ${username}` })
       winston.error(`[Server] User already exists: ${username}`)
     } else {
       crypto.randomBytes(config.tokenSize, (err, buffer) => {
