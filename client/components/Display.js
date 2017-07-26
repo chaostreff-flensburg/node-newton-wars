@@ -75,7 +75,7 @@ class Display extends Component {
   }
   drawPlayer (player) {
     drawCircle(player.pos.x, player.pos.y, player.r, 'rgba(255, 171, 64, 1.00)')
-    drawText(player.pos.x, player.pos.y, `[${player.score.kills}:${player.score.deaths}] ${player.username}`, 'rgba(0, 0, 0, 1.00)', 10, 20)
+    drawText(player.pos.x, player.pos.y, `[${player.score.kills}:${player.score.deaths}] ${player.username}`, 'rgba(0, 0, 0, 1.00)', 10, 20, 'auto')
   }
   render () {
     return (

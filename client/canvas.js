@@ -40,8 +40,14 @@ export const drawCircle = (x, y, r, color) => {
   context.fill()
 }
 
-export const drawText = (x, y, text, color, xOffset, yOffset) => {
+export const drawText = (x, y, text, color, xOffset, yOffset, align) => {
   context.font = '20px Arial'
   context.fillStyle = color
+  if (align === 'auto') {
+    context.textAlign = x > universe.x / 2 ? 'right' : 'left'
+    xOffset = x > universe.x / 2 ? xOffset * -1 : xOffset
+  } else {
+    align = align || 'left'
+  }
   context.fillText(text, x / scales.x + xOffset, y / scales.y + yOffset)
 }
