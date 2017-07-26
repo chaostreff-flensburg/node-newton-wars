@@ -3,14 +3,14 @@
   "host": "127.0.0.1",
   "planets": {
     "amount": 20,
-    "minimalSize": 100,
-    "maximalSize": 300
+    "minimalSize": 50,
+    "maximalSize": 150
   },
   "xResolution": 7680,
   "yResolution": 4320,
   "clearance": {
     "planets": 50,
-    "users": 100,
+    "users": 200,
     "common": 50
   },
   "tokenSize": 4096,

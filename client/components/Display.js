@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { requestUniverse } from '../actions'
+import { requestUniverse, requestPlayers } from '../actions'
 
 class Display extends Component {
   constructor(props) {
@@ -20,13 +20,13 @@ class Display extends Component {
     this.render = this.render.bind(this)
     this.drawCircle = this.drawCircle.bind(this)
     this.drawText = this.drawText.bind(this)
-    this.drawGravity = this.drawGravity.bind(this)
     this.drawPlanets = this.drawPlanets.bind(this)
-    this.drawUser = this.drawUser.bind(this)
+    this.drawPlayer = this.drawPlayer.bind(this)
     this.drawCurve = this.drawCurve.bind(this)
   }
   componentWillMount () {
     this.props.queryUniverse()
+    this.props.queryPlayers()
   }
   componentDidMount() {
     window.addEventListener('resize', this._resizeHandler)
@@ -42,17 +42,24 @@ class Display extends Component {
     this.renderCanvas()
   }
   renderCanvas () {
-    this.scales.x = Math.ceil(this.props.universe.dimensions.x / this.canvas.width)
-    this.scales.y = Math.ceil(this.props.universe.dimensions.y / this.canvas.height)
-    this.scales.r = Math.ceil((this.scales.x + this.scales.y))
+    this.scales.x = this.props.universe.dimensions.x / this.canvas.width
+    this.scales.y = this.props.universe.dimensions.y / this.canvas.height
+    this.scales.r = (this.scales.x + this.scales.y) / 2
     const ctx = this.canvas.getContext('2d')
     if (ctx) {
       ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-      this.drawGravity(ctx)
       this.drawPlanets(ctx)
-      if (this.props.user.auth.token) this.drawUser(ctx)
+      if (this.props.user.auth.token) {
+        this.drawPlayer(ctx, this.props.user)
+      }
+      console.log(this.props.players)
+      if (this.props.players.length) {
+        this.props.players.forEach((player) => {
+          this.drawPlayer(ctx, player)
+        })
+      }
       const randomInt = (min, max) => {
-        return Math.floor(Math.random() * (max - min) + min)
+        return Math.ceil(Math.random() * (max - min) + min)
       }
       const points = []
       if (this.props.user.auth.token) points.push(this.props.user.pos)
@@ -66,9 +73,9 @@ class Display extends Component {
     ctx.beginPath()
     ctx.moveTo(points[0].x, points[0].y)
     for (let i = 1; i < points.length - 2; ++i) {
-      const xc = (points[i].x + points[i + 1].x) / 2
-      const yc = (points[i].y + points[i + 1].y) / 2
-      ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc)
+      const dx = (points[i].x + points[i + 1].x) / 2
+      const dy = (points[i].y + points[i + 1].y) / 2
+      ctx.quadraticCurveTo(points[i].x, points[i].y, dx, dy)
     }
     ctx.quadraticCurveTo(points[points.length - 2].x, points[points.length - 2].y, points[points.length - 1].x, points[points.length - 1].y)
     ctx.lineWidth = 2
@@ -82,24 +89,18 @@ class Display extends Component {
   }
   drawCircle (ctx, x, y, r, color) {
     ctx.beginPath()
-    ctx.arc(Math.ceil(x / this.scales.x), Math.ceil(y / this.scales.y), Math.ceil(r / this.scales.r), 0, 2 * Math.PI)
+    ctx.arc(x / this.scales.x, y / this.scales.y, r / this.scales.r, 0, 2 * Math.PI)
     ctx.fillStyle = color
     ctx.fill()
-  }
-  drawGravity (ctx) {
-    this.props.universe.planets.forEach((planet) => {
-      this.drawCircle(ctx, planet.pos.x, planet.pos.y, planet.r * 10, 'rgba(0, 0, 0, 0.05)')
-    })
   }
   drawPlanets (ctx) {
     this.props.universe.planets.forEach((planet) => {
       this.drawCircle(ctx, planet.pos.x, planet.pos.y, planet.r, 'rgba(33, 150, 243, 1.00)')
     })
   }
-  drawUser (ctx) {
-    const { user } = this.props
-    this.drawCircle(ctx, user.pos.x, user.pos.y, user.r, 'rgba(255, 171, 64, 1.00)')
-    this.drawText(ctx, user.pos.x, user.pos.y, `[${user.score.kills}:${user.score.deaths}] ${user.username}`, 'rgba(0, 0, 0, 1.00)')
+  drawPlayer (ctx, player) {
+    this.drawCircle(ctx, player.pos.x, player.pos.y, player.r, 'rgba(255, 171, 64, 1.00)')
+    this.drawText(ctx, player.pos.x, player.pos.y, `[${player.score.kills}:${player.score.deaths}] ${player.username}`, 'rgba(0, 0, 0, 1.00)')
   }
   render () {
     return (
@@ -108,16 +109,18 @@ class Display extends Component {
   }
 }
 
-const injectState = ({ universe, user }) => {
+const injectState = ({ universe, user, players }) => {
   return {
     universe,
-    user
+    user,
+    players
   }
 }
 
 const injectDispatch = (dispatch) => {
   return {
-    queryUniverse: () => dispatch(requestUniverse())
+    queryUniverse: () => dispatch(requestUniverse()),
+    queryPlayers: () => dispatch(requestPlayers())
   }
 }
 

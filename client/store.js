@@ -42,7 +42,8 @@ const initialState = {
   socketio: {
     connected: false,
     notification: false
-  }
+  },
+  players: []
 }
 
 const store = createStore(

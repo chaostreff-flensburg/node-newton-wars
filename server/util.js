@@ -7,7 +7,7 @@ if (config.updateFrequency < 20 || config.updateFrequency > 200) {
 const delta = 1000 / config.updateFrequency
 
 exports.randomInt = (min, max) => {
-  return Math.ceil(Math.random() * (max - min) + min)
+  return Math.floor(Math.random() * (max - min) + min)
 }
 
 exports.Vector = function (x, y) {
@@ -59,6 +59,9 @@ exports.collide = (a, b) => {
   return (Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) < (a.r + b.r + clearance))
 }
 
-exports.getUser = (users, token) => {
-  return users.filter((user) => user.auth.token === token)[0] || null
+exports.getPublicUser = (user) => {
+  let publicUser = Object.assign({}, user)
+  delete publicUser.game
+  delete publicUser.auth.token
+  return publicUser
 }

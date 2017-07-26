@@ -19,6 +19,10 @@ server.listen(config.port, config.host, () => {
 
 const planets = []
 const users = []
+const collisions = {
+  users: 0,
+  planets: 0
+}
 
 const Planet = util.Planet
 const User = util.User
@@ -26,55 +30,81 @@ const Vector = util.Vector
 const Projectile = util.Projectile
 
 function spawnPlanet () {
-  let planet = new Planet()
-  for (let i = 0; i < users.length + planets.length; ++i) {
-    if (i < users.length) {
-      if (users.length - 1 !== i && util.collide(users[i], planet)) {
-        i = 0
-        planet = new Planet()
-      }
-    } else {
-      if (planets.length - 1 !== i - users.length && util.collide(planets[i - users.length], planet)) {
-        i = 0
-        planet = new Planet()
-      }
-      if (i === users.length + planets.length - 1) {
-        return planet
+  let planet = null
+  let valid = false
+  let next = false
+  while (!valid) {
+    next = false
+    planet = new Planet()
+    if (!users.length && !planets.length) {
+      valid = true
+    }
+    for (let i = 0; i < planets.length; ++i) {
+      if (util.collide(planets[i], planet)) {
+        next = true
+        break
       }
     }
+    if (next) {
+      ++collisions.planets
+      continue
+    }
+    for (let i = 0; i < users.length; ++i) {
+      if (util.collide(users[i], planet)) {
+        next = true
+        break
+      }
+    }
+    if (next) {
+      ++collisions.planets
+      continue
+    }
+    valid = true
   }
-  if (!planets.length && !users.length) {
-    return planet
-  }
+  return planet
 }
 
 function spawnUser (username, token, socket) {
-  let user = new User(username, token, socket)
-  for (let i = 0; i < users.length + planets.length; ++i) {
-    if (i < users.length) {
-      if (users.length - 1 !== i && util.collide(users[i], user)) {
-        i = 0
-        user = new User(username, token, socket)
-      }
-    } else {
-      if (planets.length - 1 !== i - users.length && util.collide(planets[i - users.length], user)) {
-        i = 0
-        user = new User(username, token, socket)
-      }
-      if (i === users.length + planets.length - 1) {
-        return user
+  let user = null
+  let valid = false
+  let next = false
+  while (!valid) {
+    next = false
+    user = new User(username, token, socket)
+    if (!users.length && !planets.length) {
+      valid = true
+    }
+    for (let i = 0; i < planets.length; ++i) {
+      if (util.collide(planets[i], user)) {
+        next = true
+        break
       }
     }
+    if (next) {
+      ++collisions.users
+      continue
+    }
+    for (let i = 0; i < users.length; ++i) {
+      if (util.collide(users[i], user)) {
+        next = true
+        break
+      }
+    }
+    if (next) {
+      ++collisions.users
+      continue
+    }
+    valid = true
   }
-  if (!planets.length && !users.length) {
-    return user
-  }
+  return user
 }
 
 function spawnUniverse () {
+  const timestamp = Date.now()
   for (let i = 0; i < config.planets.amount; ++i) {
     planets.push(spawnPlanet())
   }
+  winston.info(`[Server] Cthulhu created ${planets.length} planets after he had devoured ${collisions.planets} in ${Date.now() - timestamp}ms.`)
   return {
     planets,
     dimensions: {
@@ -189,6 +219,7 @@ io.on('connection', (connection) => {
 	const socket = connection
 
 	socket.emit('send-universe', universe)
+  socket.emit('send-players', { players: users.map((user) => util.getPublicUser(user)) })
 
   // user logs in
   socket.on('login', (data) => {
@@ -209,6 +240,7 @@ io.on('connection', (connection) => {
         const user = spawnUser(username, token, socket.id)
         users.push(user)
         socket.emit('authorized', user)
+        socket.broadcast.emit('join', util.getPublicUser(user))
         winston.info(`[Server] User joined: ${username}`)
       })
     }
@@ -221,6 +253,7 @@ io.on('connection', (connection) => {
       const user = users[index]
       users.splice(index, 1)
       socket.emit('unauthorized', { message: 'User successfully closed connection!' })
+      socket.broadcast.emit('leave', { socket: user.auth.socket })
       winston.info(`[Server] User left: ${user.username}`)
     } else {
       socket.emit('unauthorized', { error: 'Invalid token to log out!' })
@@ -235,6 +268,7 @@ io.on('connection', (connection) => {
       const user = users[index]
       users.splice(index, 1)
       socket.emit('unauthorized', { message: 'User successfully closed connection!' })
+      socket.broadcast.emit('leave', { socket: user.auth.socket })
       winston.info(`[Server] User left: ${user.username}`)
     }
   })
@@ -242,6 +276,10 @@ io.on('connection', (connection) => {
   // user requests universe
 	socket.on('request-universe', (data) => {
 		socket.emit('send-universe', universe)
+  })
+
+  socket.on('request-players', (data) => {
+		socket.emit('send-players', { players: users.map((user) => util.getPublicUser(user)) })
   })
 
 })

@@ -1,7 +1,23 @@
 import io from 'socket.io-client'
 
-import { CONNECT_SOCKET, DISCONNECT_SOCKET, REQUEST_UNIVERSE, LOGIN, LOGOUT } from './constants'
-import { availableSocket, unavailableSocket, loadUniverse, loadUser, invalidateLogin } from './actions'
+import {
+  CONNECT_SOCKET,
+  DISCONNECT_SOCKET,
+  REQUEST_UNIVERSE,
+  REQUEST_PLAYERS,
+  LOGIN,
+  LOGOUT
+} from './constants'
+import {
+  availableSocket,
+  unavailableSocket,
+  loadUniverse,
+  loadUser,
+  invalidateLogin,
+  addPlayer,
+  removePlayer,
+  loadPlayers
+} from './actions'
 
 let socket = null
 
@@ -19,6 +35,18 @@ const socketioMiddleware = store => next => action => {
         const { planets, dimensions } = data
         store.dispatch(loadUniverse(planets, dimensions))
       })
+      socket.on('send-players', (data) => {
+        const { players } = data
+        store.dispatch(loadPlayers(players))
+      })
+      socket.on('join', (data) => {
+        const { username, auth, score, pos, r } = data
+        store.dispatch(addPlayer(username, auth, score, pos, r))
+      })
+      socket.on('leave', (data) => {
+        const { socket } = data
+        store.dispatch(removePlayer(socket))
+      })
       socket.on('authorized', (data) => {
         const { username, auth, score, game, pos, r } = data
         store.dispatch(loadUser(username, auth, score, game, pos, r))
@@ -34,6 +62,9 @@ const socketioMiddleware = store => next => action => {
       break
     case REQUEST_UNIVERSE:
       socket.emit('request-universe')
+      break
+    case REQUEST_PLAYERS:
+      socket.emit('request-players')
       break
     case LOGIN:
       socket.emit('login', { username: action.username })
