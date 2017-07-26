@@ -52,7 +52,6 @@ class Display extends Component {
       if (this.props.user.auth.token) {
         this.drawPlayer(ctx, this.props.user)
       }
-      console.log(this.props.players)
       if (this.props.players.length) {
         this.props.players.forEach((player) => {
           this.drawPlayer(ctx, player)
