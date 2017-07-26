@@ -59,8 +59,7 @@ let instance = new Server(compiler, {
   contentBase: env.STATIC_PATH,
   inline: true,
   hot: true,
-  quiet: true,
-  publicPath: '/'
+  quiet: true
 })
 
 compiler.watch({
