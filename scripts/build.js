@@ -48,6 +48,10 @@ const config = {
       {
         test: /\.(eot|woff|woff2|svg|ttf)([\?]?.*)$/,
         loader: 'file?name=fonts/[hash].[ext]'
+      },
+      {
+        test: /\.(jpg|jpeg|png)$/,
+        loader: 'url-loader?name=[path][name].[ext]&limit=10000'
       }
     ]
   }

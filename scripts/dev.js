@@ -43,6 +43,10 @@ const config = {
       {
         test: /\.(eot|woff|woff2|svg|ttf)([\?]?.*)$/,
         loader: 'file?name=fonts/[hash].[ext]'
+      },
+      {
+        test: /\.(jpg|jpeg|png)$/,
+        loader: 'url-loader?name=[path][name].[ext]&limit=10000'
       }
     ]
   }
@@ -57,6 +61,7 @@ winston.info('[Client] Running initial development build ...')
 let instance = new Server(compiler, {
   historyApiFallback: true,
   contentBase: env.STATIC_PATH,
+  filename: 'app.js',
   inline: true,
   hot: true,
   quiet: true,
