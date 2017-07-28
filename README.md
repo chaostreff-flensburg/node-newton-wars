@@ -12,5 +12,3 @@ To build the client production build run: `npm run build`
 To build the client and deploy the server and the client run: `npm run launch`  
 
 **Note:** There might be a bug, where the browser displays a blank page in development mode. To resolve the problem, quit the script by pressing `CTRL + C`. Afterwards run `npm start` again. We are sorry for the inconvenience, but unfortunately we are not able to determine the cause of this particular problem. If you look at the commit history you might get an idea of how long we have already been trying to fix this bug. If you have a guess feel free to open an issue for this and share your wisdom with us!
-
-Code with :heart: from Flensburg, Germany
