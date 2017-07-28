@@ -55,7 +55,7 @@ const injectState = ({ user }) => {
 
 const injectDispatch = (dispatch) => {
   return {
-    changeUsername: (event) => dispatch(setUsername(event.target.value)),
+    changeUsername: (event) => dispatch(setUsername(event.target.value.trim())),
     joinGame: (username) => dispatch(login(username))
   }
 }
