@@ -7,11 +7,6 @@ import { applyScales, applyContext, clearCanvas, drawCurve, drawCircle, drawText
 class Display extends Component {
   constructor(props) {
     super()
-    this.scales = {
-      x: 0,
-      y: 0,
-      s: 0
-    }
     this._resizeHandler = () => {
       /* Allows CSS to determine size of canvas */
       this.canvas.width = this.canvas.clientWidth
