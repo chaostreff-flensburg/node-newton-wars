@@ -10,7 +10,7 @@ winston.cli()
 
 const config = {
   entry: [
-    `webpack-dev-server/client?http://${env.DEV_HOST}:${env.DEV_PORT}/`,
+    `webpack-dev-server/client?http://${env.DEV_HOST}:${env.DEV_PORT}`,
     'webpack/hot/dev-server',
     'webpack/hot/only-dev-server',
     env.ENTRYPOINT
@@ -59,7 +59,8 @@ let instance = new Server(compiler, {
   contentBase: env.STATIC_PATH,
   inline: true,
   hot: true,
-  quiet: true
+  quiet: true,
+  publicPath: '/'
 })
 
 compiler.watch({
@@ -87,7 +88,7 @@ compiler.watch({
         open(`http://${env.DEV_HOST}:${env.DEV_PORT}`)
       })
     }
-    winston.info(`[Client] Build finished [${info.hash}] [${info.time}ms] [${utils.round(human.number, 2)}${human.unit}]`)
+    winston.info(`[Client] Build finished: ${info.hash} ${info.time}ms ${utils.round(human.number, 2)}${human.unit}`)
     if (faulty) {
       winston.warn('[Client] Faulty build: Listing errors and warnings ...')
       info.errors.forEach((error) => {
