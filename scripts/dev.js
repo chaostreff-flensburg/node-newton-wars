@@ -10,7 +10,7 @@ winston.cli()
 
 const config = {
   entry: [
-    `webpack-dev-server/client?http://${env.DEV_HOST}:${env.DEV_PORT}`,
+    `webpack-dev-server/client?http://${env.DEV_HOST}:${env.DEV_PORT}/`,
     'webpack/hot/dev-server',
     'webpack/hot/only-dev-server',
     env.ENTRYPOINT
