@@ -1,65 +1,40 @@
 const config = require('./config')
+const math = require('./math')
+const entities = require('./entities')
 
-if (config.updateFrequency < 20 || config.updateFrequency > 200) {
-  throw new Error('Update frequency must be between 20Hz and 200Hz.')
-}
+const Vector = math.Vector
+const Planet = entities.Planet
+const User = entities.User
+const Rocket = entities.Rocket
 
-const delta = 1000 / config.updateFrequency
-
-exports.randomInt = (min, max) => {
-  return Math.floor(Math.random() * (max - min) + min)
-}
-
-exports.Vector = function (x, y) {
-  this.x = x
-  this.y = y
-}
-
-exports.Planet = function () {
-  const x = exports.randomInt(config.planets.maximalSize, config.xResolution - config.planets.maximalSize)
-  const y = exports.randomInt(config.planets.maximalSize, config.yResolution - config.planets.maximalSize)
-  const r = exports.randomInt(config.planets.minimalSize, config.planets.maximalSize)
-  this.pos = new exports.Vector(x, y)
-  this.r = r
-  this.g = r * config.gravity
-}
-
-exports.User = function (username, token, socket) {
-  const x = exports.randomInt(config.planets.maximalSize, config.xResolution - config.planets.maximalSize)
-  const y = exports.randomInt(config.planets.maximalSize, config.yResolution - config.planets.maximalSize)
-  this.username = username
-  this.auth = { token, socket }
-  this.score = { kills: 0, deaths: 0 }
-  this.game = { energy: 20, velocity: 10, angle: 0 }
-  this.shots = []
-  this.pos = new exports.Vector(x, y)
-  this.r = config.userSize
-}
-
-exports.Shot = function () {
-  this.points = []
-  this.collided = false
-  this.velocity = null
-  this.acceleration = null
-}
-
+// calculate if a collision occurs
 exports.collide = (a, b) => {
+  // additional distance besides the radii that should not be violated against
   let clearance = 0
-  if (a instanceof exports.User && b instanceof exports.User) {
+  if (a instanceof User && b instanceof User) {
+    // prevent users from spawning to close to each other
     clearance += config.clearance.users
-  } else if (a instanceof exports.Planet && b instanceof exports.Planet) {
+  } else if (a instanceof Planet && b instanceof Planet) {
+    // increase to achieve a more homogeneous universe
+    // decrease to achieve a more heterogeneous universe
     clearance += config.clearance.planets
+  } else if (a instanceof Rocket || b instanceof Rocket) {
+    // rockets should only collide on direct contact
+    clearance = 0
   } else {
+    // common clearance when no special case applies
     clearance += config.clearance.common
   }
-  const x = a.pos.x - b.pos.x
-  const y = a.pos.y - b.pos.y
-  return (Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) < (a.r + b.r + clearance))
+  // if the distance bigger than the radii and the clearance
+  return b.pos.clone().minus(a.pos).longitude() < a.r + b.r + clearance
 }
 
+// remove private information from the user object before broadcasting it to everyone
 exports.getPublicUser = (user) => {
   const publicUser = Object.assign({}, user)
+  // unnecessary overhead
   delete publicUser.game
+  // reinforce security and prevent session spoofing
   delete publicUser.auth.token
   return publicUser
 }

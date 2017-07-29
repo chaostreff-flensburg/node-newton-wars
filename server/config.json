@@ -6,8 +6,10 @@
     "minimalSize": 50,
     "maximalSize": 150
   },
-  "xResolution": 7680,
-  "yResolution": 4320,
+  "resolution": {
+    "x": 7680,
+    "y": 4320
+  },
   "clearance": {
     "planets": 50,
     "users": 200,
@@ -15,6 +17,7 @@
   },
   "tokenSize": 4096,
   "userSize": 30,
-  "gravity": 9.81,
+  "gravity": 6.67408E-11,
+  "massFactor": 10,
   "updateFrequency": 200
 }
