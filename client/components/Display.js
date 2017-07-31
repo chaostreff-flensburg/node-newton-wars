@@ -9,7 +9,7 @@ class Display extends Component {
   constructor(props) {
     super(props)
     this.image = new Image()
-    this.image.src = `/leuchtturmrakete.svg`
+    this.image.src = `/leuchtturmrakede.svg`
     this.mouse = new Vector()
     this.scales = new Vector()
     this.direction = new Vector()
