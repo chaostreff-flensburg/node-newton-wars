@@ -27,6 +27,7 @@
     "npm-run-all": "4.0.2",
     "style-loader": "0.16.1",
     "transfer-webpack-plugin": "0.1.4",
+    "url-loader": "0.5.9",
     "webpack": "1.13.3",
     "webpack-dev-server": "1.16.2"
   },

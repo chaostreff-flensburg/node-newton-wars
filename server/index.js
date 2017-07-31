@@ -8,6 +8,7 @@ const config = require('./config')
 const util = require('./util')
 const math = require('./math')
 const entities = require('./entities')
+const tools = require('../scripts/util')
 
 winston.cli()
 winston.info('[Server] Starting server ...')
@@ -161,4 +162,26 @@ io.on('connection', (connection) => {
 		socket.emit('send-players', { players: users.map((user) => util.getPublicUser(user)) })
   })
 
+  socket.on('shoot', (data) => {
+    const { velocity, angle, token } = data
+    const index = users.findIndex((user) => user.auth.socket === socket.id)
+
+  })
+
 })
+
+let counter = 0
+let logging = false
+
+const loop = setInterval(() => {
+  ++counter
+  users.forEach((user) => {
+    user.rockets.forEach((rocket) => {
+      rocket.move(planets)
+    })
+  })
+  if (!(counter % 100) && logging) {
+    const human = tools.getHumanFilesize(process.memoryUsage().rss)
+    winston.info(`[Server] Using ${tools.round(human.number, 2)}${human.unit} of RAM.`)
+  }
+}, interval)

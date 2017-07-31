@@ -15,6 +15,10 @@ export const applyContext = (canvasContext) => {
   context = canvasContext
 }
 
+export const getScales = () => {
+  return scales
+}
+
 export const clearCanvas = () => {
   context.clearRect(0, 0, canvas.x, canvas.y)
 }
@@ -33,21 +37,30 @@ export const drawCurve = (points, color, width) => {
   context.stroke()
 }
 
-export const drawCircle = (x, y, r, color) => {
+export const drawCircle = (vector, r, color) => {
   context.beginPath()
-  context.arc(x / scales.x, y / scales.y, r / scales.r, 0, 2 * Math.PI)
+  context.arc(vector.x / scales.x, vector.y / scales.y, r / scales.r, 0, 2 * Math.PI)
   context.fillStyle = color
   context.fill()
 }
 
-export const drawText = (x, y, text, color, xOffset, yOffset, align) => {
+export const drawText = (vector, text, color, xOffset, yOffset, align) => {
   context.font = '20px Arial'
   context.fillStyle = color
   if (align === 'auto') {
-    context.textAlign = x > universe.x / 2 ? 'right' : 'left'
-    xOffset = x > universe.x / 2 ? xOffset * -1 : xOffset
+    context.textAlign = vector.x > universe.x / 2 ? 'right' : 'left'
+    xOffset = vector.x > universe.x / 2 ? xOffset * -1 : xOffset
   } else {
     align = align || 'left'
   }
-  context.fillText(text, x / scales.x + xOffset, y / scales.y + yOffset)
+  context.fillText(text, vector.x / scales.x + xOffset, vector.y / scales.y + yOffset)
+}
+
+export const drawImage = (vector, image, size, angle) => {
+  context.save()
+  context.translate(vector.x / scales.x, vector.y / scales.y)
+  context.rotate(angle)
+  context.translate(-size / 2, -size / 2)
+  context.drawImage(image, 0, 0, size, size)
+  context.restore()
 }

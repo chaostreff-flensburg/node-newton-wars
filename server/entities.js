@@ -37,13 +37,15 @@ exports.User = function (username, token, socket) {
   // current position
   this.pos = new Vector(x, y)
   // size
-  this.r = config.userSize
+  this.r = config.sizes.users
 }
 
 // the projectile that is fired by the users
 exports.Rocket = function (position, velocity, angle) {
   // did the rocket collide
   this.collided = false
+  // size of the rocket
+  this.r = config.sizes.rockets
   // points the rocket passed
   this.positions = [position]
   // the current velocity vector of the rocket

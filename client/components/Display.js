@@ -2,34 +2,49 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import { requestUniverse, requestPlayers } from '../actions'
-import { applyScales, applyContext, clearCanvas, drawCurve, drawCircle, drawText } from '../canvas'
+import { applyScales, applyContext, getScales, clearCanvas, drawCurve, drawCircle, drawText, drawImage } from '../canvas'
+import { Vector, randomInt, radToDeg } from '../math'
 
 class Display extends Component {
   constructor(props) {
-    super()
+    super(props)
+    this.image = new Image()
+    this.image.src = `/leuchtturmrakete.svg`
+    this.mouse = new Vector()
+    this.scales = new Vector()
+    this.direction = new Vector()
     this._resizeHandler = () => {
-      /* Allows CSS to determine size of canvas */
+      // allows CSS to determine size of canvas
       this.canvas.width = this.canvas.clientWidth
       this.canvas.height = this.canvas.clientHeight
       this.renderCanvas()
     }
+    this._mousemoveHandler = (e) => {
+      const { user } = this.props
+      this.scales = getScales()
+      this.mouse = new Vector(e.clientX, e.clientY)
+      this.renderCanvas()
+    }
     this.renderCanvas = this.renderCanvas.bind(this)
     this.drawPlanet = this.drawPlanet.bind(this)
+    this.drawUser = this.drawUser.bind(this)
     this.drawPlayer = this.drawPlayer.bind(this)
   }
   componentWillMount () {
     this.props.queryUniverse()
     this.props.queryPlayers()
   }
-  componentDidMount() {
+  componentDidMount () {
+    window.addEventListener('mousemove', this._mousemoveHandler, false)
     window.addEventListener('resize', this._resizeHandler)
-    /* Allows CSS to determine size of canvas */
+    // allows CSS to determine size of canvas
     this.canvas.width = this.canvas.clientWidth
     this.canvas.height = this.canvas.clientHeight
     this.renderCanvas()
   }
-  componentWillUnmount() {
-    window.removeEventListener('resize', this._resizeHandler);
+  componentWillUnmount () {
+    window.removeEventListener('mousemove', this._mousemoveHandler, false)
+    window.removeEventListener('resize', this._resizeHandler)
   }
   componentDidUpdate() {
     this.renderCanvas()
@@ -42,19 +57,13 @@ class Display extends Component {
     applyContext(context)
     if (context) {
       clearCanvas()
-      const randomInt = (min, max) => {
-        return Math.ceil(Math.random() * (max - min) + min)
-      }
-      const points = []
-      if (this.props.user.auth.token) points.push(this.props.user.pos)
-      for (let i = 0; i < 40; ++i) {
-        points.push({ x: randomInt(0, this.canvas.width), y: randomInt(0, this.canvas.height) })
-      }
-      drawCurve(points, 'rgba(255, 171, 64, 1.00)', 2)
       planets.forEach((planet) => {
         this.drawPlanet(planet)
       })
-      if (user.auth.token) this.drawPlayer(this.props.user)
+      if (user.auth.token) {
+        this.direction = new Vector(this.mouse.x - user.pos.x / this.scales.x, this.mouse.y - user.pos.y / this.scales.y)
+        this.drawUser(user)
+      }
       if (players.length) {
         players.forEach((player) => {
           this.drawPlayer(player)
@@ -63,11 +72,15 @@ class Display extends Component {
     }
   }
   drawPlanet (planet) {
-    drawCircle(planet.pos.x, planet.pos.y, planet.r, 'rgba(33, 150, 243, 1.00)')
+    drawCircle(planet.pos, planet.r, 'rgba(33, 150, 243, 1.00)')
+  }
+  drawUser (user) {
+    drawImage(user.pos, this.image, user.r * 2.5, this.direction.angle() + Math.PI / 2)
+    drawText(user.pos, `[${user.score.kills}:${user.score.deaths}] ${user.username}`, 'rgba(0, 0, 0, 1.00)', 10, 20, 'auto')
   }
   drawPlayer (player) {
-    drawCircle(player.pos.x, player.pos.y, player.r, 'rgba(255, 171, 64, 1.00)')
-    drawText(player.pos.x, player.pos.y, `[${player.score.kills}:${player.score.deaths}] ${player.username}`, 'rgba(0, 0, 0, 1.00)', 10, 20, 'auto')
+    drawCircle(player.pos, player.r, 'rgba(255, 171, 64, 1.00)')
+    drawText(player.pos, `[${player.score.kills}:${player.score.deaths}] ${player.username}`, 'rgba(0, 0, 0, 1.00)', 10, 20, 'auto')
   }
   render () {
     return (

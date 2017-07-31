@@ -3,7 +3,7 @@ const winston = require('winston')
 const open = require('open')
 const webpack = require('webpack')
 const Server = require('webpack-dev-server')
-const utils = require('./utils')
+const util = require('./util')
 const env = require('./env')
 
 winston.cli()
@@ -41,11 +41,11 @@ const config = {
         loader: 'style-loader!css-loader'
       },
       {
-        test: /\.(eot|woff|woff2|svg|ttf)([\?]?.*)$/,
+        test: /\.(eot|woff|woff2|ttf)([\?]?.*)$/,
         loader: 'file?name=fonts/[hash].[ext]'
       },
       {
-        test: /\.(jpg|jpeg|png)$/,
+        test: /\.(jpg|jpeg|png|svg)$/,
         loader: 'url-loader?name=[path][name].[ext]&limit=10000'
       }
     ]
@@ -65,7 +65,8 @@ let instance = new Server(compiler, {
   inline: true,
   hot: true,
   quiet: true,
-  publicPath: '/'
+  publicPath: '/',
+  port: env.DEV_PORT
 })
 
 compiler.watch({
@@ -84,7 +85,7 @@ compiler.watch({
     info.chunks.forEach((chunk) => {
       size += chunk.size
     })
-    let human = utils.getHumanFilesize(size)
+    let human = util.getHumanFilesize(size)
     faulty = info.errors.length > 0 || info.warnings.length
     if (!ready && !faulty) {
       ready = true
@@ -93,7 +94,7 @@ compiler.watch({
         open(`http://${env.DEV_HOST}:${env.DEV_PORT}`)
       })
     }
-    winston.info(`[Client] Build finished: ${info.hash} ${info.time}ms ${utils.round(human.number, 2)}${human.unit}`)
+    winston.info(`[Client] Build finished: ${info.hash} ${info.time}ms ${util.round(human.number, 2)}${human.unit}`)
     if (faulty) {
       winston.warn('[Client] Faulty build: Listing errors and warnings ...')
       info.errors.forEach((error) => {

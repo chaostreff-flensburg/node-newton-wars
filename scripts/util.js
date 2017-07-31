@@ -7,8 +7,7 @@ utils.round = (number, precision) => {
   return (rounded / factor)
 }
 
-utils.getHumanFilesize = (size, padding) => {
-  padding === undefined ? false : padding
+utils.getHumanFilesize = (size) => {
   let units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
   let unit = 0;
   while (size > 1000) {

@@ -3,7 +3,7 @@ const webpack = require('webpack')
 const path = require('path')
 const winston = require('winston')
 const fs = require('fs-extra')
-const utils = require('./utils')
+const util = require('./util')
 const env = require('./env')
 
 winston.cli()
@@ -46,11 +46,11 @@ const config = {
         loader: 'style-loader!css-loader'
       },
       {
-        test: /\.(eot|woff|woff2|svg|ttf)([\?]?.*)$/,
+        test: /\.(eot|woff|woff2|ttf)([\?]?.*)$/,
         loader: 'file?name=fonts/[hash].[ext]'
       },
       {
-        test: /\.(jpg|jpeg|png)$/,
+        test: /\.(jpg|jpeg|png|svg)$/,
         loader: 'url-loader?name=[path][name].[ext]&limit=10000'
       }
     ]
@@ -74,8 +74,8 @@ fs.emptyDir(env.BUILD_PATH, (err) => {
       info.chunks.forEach((chunk) => {
         size += chunk.size
       })
-      let human = utils.getHumanFilesize(size)
-      winston.info(`[Client] Build finished [${info.hash}] [${info.time}ms] [${utils.round(human.number, 2)}${human.unit}]`)
+      let human = util.getHumanFilesize(size)
+      winston.info(`[Client] Build finished [${info.hash}] [${info.time}ms] [${util.round(human.number, 2)}${human.unit}]`)
     }
   })
 })

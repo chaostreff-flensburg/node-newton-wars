@@ -31,7 +31,7 @@ class Login extends Component {
   render () {
     const { user, changeUsername } = this.props
     return (
-      <Card>
+      <Card raised>
         <CardContent>
           <Typography type='headline'>Newton wars</Typography>
           <Typography type='subheading' gutterBottom>Choose a username and join the game!</Typography>

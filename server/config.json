@@ -16,8 +16,11 @@
     "common": 50
   },
   "tokenSize": 4096,
-  "userSize": 30,
+  "sizes": {
+    "users": 30,
+    "rockets": 5
+  },
   "gravity": 6.67408E-11,
   "massFactor": 10,
-  "updateFrequency": 200
+  "updateFrequency": 50
 }
