@@ -172,6 +172,7 @@ io.on('connection', (connection) => {
 
 let counter = 0
 let logging = false
+let clear = false
 
 const loop = setInterval(() => {
   ++counter
@@ -182,6 +183,12 @@ const loop = setInterval(() => {
   })
   if (!(counter % 100) && logging) {
     const human = tools.getHumanFilesize(process.memoryUsage().rss)
-    winston.info(`[Server] Using ${tools.round(human.number, 2)}${human.unit} of RAM.`)
+    if (clear) {
+      process.stdout.cursorTo(0)
+      process.stdout.moveCursor(0, -1)
+      process.stdout.clearLine()
+    }
+    winston.info(`[Server] Using ${tools.round(human.number, 2).toFixed(2)}${human.unit} of RAM.`)
+    clear = true
   }
 }, interval)

@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import { requestUniverse, requestPlayers } from '../actions'
-import { applyScales, applyContext, getScales, clearCanvas, drawCurve, drawCircle, drawText, drawImage } from '../canvas'
-import { Vector, randomInt, radToDeg } from '../math'
+import { setScales, setContext, getScales, clearCanvas, drawCurve, drawCircle, drawText, drawImage } from '../canvas'
+import { Vector, round } from '../math'
 
 class Display extends Component {
   constructor(props) {
@@ -13,19 +13,26 @@ class Display extends Component {
     this.mouse = new Vector()
     this.scales = new Vector()
     this.direction = new Vector()
+    this.velocity = 0
     this._resizeHandler = () => {
       // allows CSS to determine size of canvas
       this.canvas.width = this.canvas.clientWidth
       this.canvas.height = this.canvas.clientHeight
-      this.renderCanvas()
+      this.drawCanvas()
     }
     this._mousemoveHandler = (e) => {
       const { user } = this.props
       this.scales = getScales()
       this.mouse = new Vector(e.clientX, e.clientY)
-      this.renderCanvas()
+      this.drawCanvas()
     }
-    this.renderCanvas = this.renderCanvas.bind(this)
+    this._clickHandler = (e) => {
+      const { user } = this.props
+      if (this.velocity && e.which === 1) {
+        console.log(this.velocity)
+      }
+    }
+    this.drawCanvas = this.drawCanvas.bind(this)
     this.drawPlanet = this.drawPlanet.bind(this)
     this.drawUser = this.drawUser.bind(this)
     this.drawPlayer = this.drawPlayer.bind(this)
@@ -35,26 +42,27 @@ class Display extends Component {
     this.props.queryPlayers()
   }
   componentDidMount () {
-    window.addEventListener('mousemove', this._mousemoveHandler, false)
     window.addEventListener('resize', this._resizeHandler)
+    window.addEventListener('mousemove', this._mousemoveHandler)
+    window.addEventListener('mousedown', this._clickHandler)
     // allows CSS to determine size of canvas
     this.canvas.width = this.canvas.clientWidth
     this.canvas.height = this.canvas.clientHeight
-    this.renderCanvas()
+    this.drawCanvas()
   }
   componentWillUnmount () {
     window.removeEventListener('mousemove', this._mousemoveHandler, false)
     window.removeEventListener('resize', this._resizeHandler)
   }
   componentDidUpdate() {
-    this.renderCanvas()
+    this.drawCanvas()
   }
-  renderCanvas () {
+  drawCanvas () {
     const { universe, players, user } = this.props
     const { planets, dimensions } = universe
     const context = this.canvas.getContext('2d')
-    applyScales(dimensions, { x: this.canvas.width, y: this.canvas.height })
-    applyContext(context)
+    setScales(dimensions, { x: this.canvas.width, y: this.canvas.height })
+    setContext(context)
     if (context) {
       clearCanvas()
       planets.forEach((planet) => {
@@ -62,6 +70,7 @@ class Display extends Component {
       })
       if (user.auth.token) {
         this.direction = new Vector(this.mouse.x - user.pos.x / this.scales.x, this.mouse.y - user.pos.y / this.scales.y)
+        this.velocity = this.direction.longitude() > 200 ? (10).toFixed(2) : round(this.direction.longitude() / 20, 2).toFixed(2)
         this.drawUser(user)
       }
       if (players.length) {
@@ -76,7 +85,7 @@ class Display extends Component {
   }
   drawUser (user) {
     drawImage(user.pos, this.image, user.r * 2.5, this.direction.angle() + Math.PI / 2)
-    drawText(user.pos, `[${user.score.kills}:${user.score.deaths}] ${user.username}`, 'rgba(0, 0, 0, 1.00)', 10, 20, 'auto')
+    drawText(user.pos, `[${user.score.kills}:${user.score.deaths}] ${user.username} w/  v:${this.velocity}`, 'rgba(0, 0, 0, 1.00)', 10, 20, 'auto')
   }
   drawPlayer (player) {
     drawCircle(player.pos, player.r, 'rgba(255, 171, 64, 1.00)')

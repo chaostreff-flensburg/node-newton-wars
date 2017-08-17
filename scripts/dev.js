@@ -16,7 +16,7 @@ const config = {
     env.ENTRYPOINT
   ],
   output: {
-    path: env.BUILD_PATH,
+    path: env.STATIC_PATH,
     filename: 'app.js',
     publicPath: '/'
   },

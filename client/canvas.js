@@ -3,7 +3,7 @@ let universe = {}
 let canvas = {}
 let context = null
 
-export const applyScales = (universeDimensions, canvasDimensions) => {
+export const setScales = (universeDimensions, canvasDimensions) => {
   scales.x = universeDimensions.x / canvasDimensions.x
   scales.y = universeDimensions.y / canvasDimensions.y
   scales.r = (scales.x + scales.y) / 2
@@ -11,7 +11,7 @@ export const applyScales = (universeDimensions, canvasDimensions) => {
   canvas = canvasDimensions
 }
 
-export const applyContext = (canvasContext) => {
+export const setContext = (canvasContext) => {
   context = canvasContext
 }
 

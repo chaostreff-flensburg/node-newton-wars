@@ -74,6 +74,8 @@ const socketioMiddleware = store => next => action => {
     case LOGOUT:
       socket.emit('logout', { username: action.username, token: action.token })
       break
+    case 'SHOOT':
+      socket.emit('shoot', { username: action.username, token: action.token, angle: action.angle, velocity: action.velocity })
   }
   return next(action)
 }
