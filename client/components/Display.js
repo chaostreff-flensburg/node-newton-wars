@@ -85,7 +85,7 @@ class Display extends Component {
   }
   drawUser (user) {
     drawImage(user.pos, this.image, user.r * 2.5, this.direction.angle() + Math.PI / 2)
-    drawText(user.pos, `[${user.score.kills}:${user.score.deaths}] ${user.username} w/  v:${this.velocity}`, 'rgba(0, 0, 0, 1.00)', 10, 20, 'auto')
+    drawText(user.pos, `[${user.score.kills}:${user.score.deaths}] ${user.username} v:${this.velocity}`, 'rgba(0, 0, 0, 1.00)', 10, 20, 'auto')
   }
   drawPlayer (player) {
     drawCircle(player.pos, player.r, 'rgba(255, 171, 64, 1.00)')
