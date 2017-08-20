@@ -1,10 +1,11 @@
-// auth
+// user
 export const SET_USERNAME = 'SET_USERNAME'
 export const LOGIN = 'LOGIN'
 export const INVALIDATE_LOGIN = 'INVALIDATE_LOGIN'
 export const LOGOUT = 'LOGOUT'
 export const NOTIFY_LOGOUT = 'NOTIFY_LOGOUT'
 export const LOAD_USER = 'LOAD_USER'
+export const SHOOT_ROCKET = 'SHOOT_ROCKET'
 
 // universe
 export const REQUEST_UNIVERSE = 'REQUEST_UNIVERSE'

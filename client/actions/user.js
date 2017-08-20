@@ -1,4 +1,4 @@
-import { SET_USERNAME, LOGIN, INVALIDATE_LOGIN, LOGOUT, NOTIFY_LOGOUT, LOAD_USER } from '../constants'
+import { SET_USERNAME, LOGIN, INVALIDATE_LOGIN, LOGOUT, NOTIFY_LOGOUT, LOAD_USER, SHOOT_ROCKET } from '../constants'
 
 export function setUsername (username) {
   return {
@@ -45,5 +45,13 @@ export function loadUser (username, auth, score, game, pos, r) {
     game,
     pos,
     r
+  }
+}
+
+export function shootRocket (velocity, angle) {
+  return {
+    type: SHOOT_ROCKET,
+    velocity,
+    angle
   }
 }

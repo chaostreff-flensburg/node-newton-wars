@@ -158,6 +158,10 @@ io.on('connection', (connection) => {
 		socket.emit('send-players', { players: db.get('users').map((user) => util.getPublicUser(user)).value() })
   })
 
+  socket.on('shoot', (data) => {
+    winston.info(`User shot: ${data.username}`)
+    console.log(data)
+  })
 })
 
 let counter = 0

@@ -1,4 +1,4 @@
-import { SET_USERNAME, LOAD_USER, INVALIDATE_LOGIN, NOTIFY_LOGOUT, LOGIN, LOGOUT } from '../constants'
+import { SET_USERNAME, LOAD_USER, INVALIDATE_LOGIN, NOTIFY_LOGOUT, LOGIN, LOGOUT, SHOOT_ROCKET } from '../constants'
 
 const auth = (state = {}, action = {}) => {
   switch (action.type) {
@@ -54,6 +54,11 @@ const game = (state = {}, action = {}) => {
         angle: 0
       })
       break
+    case SHOOT_ROCKET:
+      return Object.assign({}, state, {
+        velocity: action.velocity,
+        angle: action.angle
+      })
     default:
       return state
   }
@@ -123,6 +128,11 @@ const user = (state = {}, action = {}) => {
     case LOGOUT:
       return Object.assign({}, state, {
         loading: true
+      })
+      break
+    case SHOOT_ROCKET:
+      return Object.assign({}, state, {
+        game: game(state.game, action)
       })
       break
     default:

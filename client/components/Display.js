@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { requestUniverse, requestPlayers } from '../actions'
+import { requestUniverse, requestPlayers, shootRocket } from '../actions'
 import { setScales, setContext, getScales, clearCanvas, drawCurve, drawCircle, drawText, drawImage } from '../canvas'
 import { Vector, round } from '../math'
 
@@ -21,15 +21,14 @@ class Display extends Component {
       this.drawCanvas()
     }
     this._mousemoveHandler = (e) => {
-      const { user } = this.props
       this.scales = getScales()
       this.mouse = new Vector(e.clientX, e.clientY)
       this.drawCanvas()
     }
     this._clickHandler = (e) => {
-      const { user } = this.props
-      if (this.velocity && e.which === 1) {
-        console.log(this.velocity)
+      const { user, fireRocket } = this.props
+      if (this.velocity && e.which === 1 && user.auth.token) {
+        fireRocket(this.velocity, this.direction.angle())
       }
     }
     this.drawCanvas = this.drawCanvas.bind(this)
@@ -51,8 +50,9 @@ class Display extends Component {
     this.drawCanvas()
   }
   componentWillUnmount () {
-    window.removeEventListener('mousemove', this._mousemoveHandler, false)
+    window.removeEventListener('mousemove', this._mousemoveHandler)
     window.removeEventListener('resize', this._resizeHandler)
+    window.addEventListener('mousedown', this._clickHandler)
   }
   componentDidUpdate() {
     this.drawCanvas()
@@ -70,7 +70,7 @@ class Display extends Component {
       })
       if (user.auth.token) {
         this.direction = new Vector(this.mouse.x - user.pos.x / this.scales.x, this.mouse.y - user.pos.y / this.scales.y)
-        this.velocity = this.direction.longitude() > 200 ? (10).toFixed(2) : round(this.direction.longitude() / 20, 2).toFixed(2)
+        this.velocity = Number(this.direction.longitude() > 200 ? (10).toFixed(2) : round(this.direction.longitude() / 20, 2).toFixed(2))
         this.drawUser(user)
       }
       if (players.length) {
@@ -108,6 +108,7 @@ const injectState = ({ universe, user, players }) => {
 
 const injectDispatch = (dispatch) => {
   return {
+    fireRocket: (velocity, angle) => dispatch(shootRocket(velocity, angle)),
     queryUniverse: () => dispatch(requestUniverse()),
     queryPlayers: () => dispatch(requestPlayers())
   }
