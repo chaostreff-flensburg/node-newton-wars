@@ -70,7 +70,7 @@ class Display extends Component {
       })
       if (user.auth.token) {
         this.direction = new Vector(this.mouse.x - user.pos.x / this.scales.x, this.mouse.y - user.pos.y / this.scales.y)
-        this.velocity = Number(this.direction.longitude() > 200 ? (10).toFixed(2) : round(this.direction.longitude() / 20, 2).toFixed(2))
+        this.velocity = Number(this.direction.longitude() > 200 ? 10 : Math.ceil(this.direction.longitude() / 20))
         this.drawUser(user)
       }
       if (players.length) {
