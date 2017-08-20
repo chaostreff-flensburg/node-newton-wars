@@ -61,7 +61,7 @@ function spawnEntity (Entity) {
     }
     if (next) {
       const collisions = db.get('collisions').value()
-      db.get('collisions').assign(collisions + 1).write()
+      db.set('collisions', collisions + 1).write()
       continue
     }
     for (let i = 0; i < users.length; ++i) {
@@ -72,7 +72,7 @@ function spawnEntity (Entity) {
     }
     if (next) {
       const collisions = db.get('collisions').value()
-      db.get('collisions').assign(collisions + 1).write()
+      db.set('collisions', collisions + 1).write()
       continue
     }
     break
